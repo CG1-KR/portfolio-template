@@ -3,11 +3,11 @@
   "profile": {
     "name": "[이름 입력]",
     "role": "[지원 분야 입력]",
-    "status": "채워 가는 포트폴리오",
-    "eyebrow": "A portfolio, in progress",
-    "headline": "나의 경험을,\n하나의 이야기로.",
-    "description": "[관심 분야와 나의 강점을 두 문장으로 소개하세요.]\n[어떤 문제를 해결하고 싶은지 적어 보세요.]",
-    "about": "[어떤 일을 하고 싶은 사람인지 소개하세요.]\n\n[관심을 갖게 된 계기, 문제를 대하는 태도, 앞으로 성장하고 싶은 방향을 적어 보세요.]",
+    "status": "Portfolio in progress",
+    "eyebrow": "A closer look at my work",
+    "headline": "어떻게 해결했는지,\n프로젝트로 말합니다.",
+    "description": "[관심 분야]의 문제를 발견하고 해결한 과정을 담았습니다.",
+    "about": "[나의 역할과 강점을 한 문장으로 소개하세요.]",
     "location": "[활동 지역 / 원격]",
     "focus": "[관심 분야]",
     "keywords": "[나를 표현하는 키워드]"
