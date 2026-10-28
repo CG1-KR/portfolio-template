@@ -237,6 +237,7 @@ function renderRoute(focus){
  routeKey=key;lastView=r.view;
  if(changed){$('#workspace').scrollTop=r.view==='projects'?listScroll:0;if(focus){const heading=$('[data-view="'+r.view+'"] h1');heading?.focus({preventScroll:true})}}
 }
+$('.skip').addEventListener('click',e=>{e.preventDefault();$('#workspace').focus()});
 addEventListener('hashchange',()=>renderRoute(true));
 $('#project-search').addEventListener('input',e=>{searchQuery=e.target.value;renderProjects()});
 $$('[data-filter]').forEach(b=>b.addEventListener('click',()=>{activeFilter=b.dataset.filter;renderProjects()}));
