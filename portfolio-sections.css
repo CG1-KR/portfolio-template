@@ -826,3 +826,31 @@ body[data-neumorphism="portfolio"] .app-sidebar .app-nav {
 body[data-neumorphism="portfolio"] #view-detail .detail-heading .view-subtitle {
   display: none !important;
 }
+
+
+/* Security case filter: compact separation without exposing private case text. */
+body[data-neumorphism="portfolio"] #view-projects .segments .filter[data-filter="case"] {
+  white-space: nowrap;
+}
+body[data-neumorphism="portfolio"] #view-projects .segments .filter[data-filter="case"][aria-pressed="true"] {
+  color: #3f5d9d;
+}
+body[data-neumorphism="portfolio"] #view-projects .portfolio-section[data-section="case"] .portfolio-section-name h2 {
+  color: #344f81;
+}
+body[data-neumorphism="portfolio"] #view-projects .portfolio-section[data-section="case"] .portfolio-section-grid {
+  align-items: stretch;
+}
+body[data-neumorphism="portfolio"] #view-projects .portfolio-section[data-section="case"] .project-card .card-kicker > span:first-child {
+  font-weight: 700;
+}
+@media (max-width: 640px) {
+  body[data-neumorphism="portfolio"] #view-projects .segments {
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+  }
+  body[data-neumorphism="portfolio"] #view-projects .segments .filter {
+    min-height: 38px;
+  }
+}
