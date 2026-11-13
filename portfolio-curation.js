@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261113-learning-source";
+  const VERSION = "20261113-learning-source2";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -165,9 +165,13 @@
 
     const periodFromSource = String(found.period || found.date || "").trim();
     const dateMatch = coursePart.match(/20\d{2}[.\-/]\d{1,2}/);
-    const period = periodFromSource || (dateMatch ? dateMatch[0] : "");
-    const context = description || coursePart;
-    const organization = String(found.organization || "").trim();
+    // A broad career timeline can mention the course without having the
+    // course's dates or organization; do not copy those unrelated values.
+    const ownTitle = mentionsCourse(heading);
+    const period = ownTitle ? (periodFromSource || (dateMatch ? dateMatch[0] : "")) :
+      (dateMatch ? dateMatch[0] : "");
+    const context = ownTitle ? (description || coursePart) : coursePart;
+    const organization = ownTitle ? String(found.organization || "").trim() : "";
     const record = {
       title:courseTitle,
       category:"learning",
