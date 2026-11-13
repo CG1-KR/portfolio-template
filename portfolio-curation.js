@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261113-learning-source3";
+  const VERSION = "20261113-cases-view1";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -71,11 +71,11 @@
 
   // Only opaque presentation fingerprints are kept in this public script.
   // Names, dates, case content and project evidence stay in encrypted HTML.
+  // Vulnerability case notes have a dedicated top-level page.
   const PROJECT_SECTIONS = [
     {id:"practice",label:"실무·사례"},
     {id:"research",label:"개발·연구"},
-    {id:"learning",label:"학습팀"},
-    {id:"case",label:"취약점 정리"}
+    {id:"learning",label:"학습팀"}
   ];
   const CONTENT_FINGERPRINTS = Object.freeze({
     research: [1451807271,1862098197,3726324113,1000703431],
@@ -256,15 +256,14 @@
       const records = sourceProjects();
       const sections = records.map(projectSection);
       const counts = {
-        all: sections.filter(id=>id!=="hidden").length,
+        all: sections.filter(id=>id!=="hidden" && id!=="case").length,
         practice: sections.filter(id=>id==="practice").length,
         research: sections.filter(id=>id==="research").length,
-        learning: sections.filter(id=>id==="learning").length,
-        case: sections.filter(id=>id==="case").length
+        learning: sections.filter(id=>id==="learning").length
       };
       const countIds = {
         all:"count-all",practice:"count-project",research:"count-research",
-        learning:"count-learning",case:"count-case"
+        learning:"count-learning"
       };
       Object.keys(countIds).forEach(key=>{
         const node = document.getElementById(countIds[key]);
@@ -330,9 +329,7 @@
         const title = document.createElement("h2");
         title.textContent = "등록된 항목이 없습니다.";
         const note = document.createElement("p");
-        note.textContent = intended==="case"
-          ? "잠금 해제한 원본에 등록된 취약점 사례를 확인해 주세요."
-          : "다른 분류를 선택하거나 검색어를 변경해 주세요.";
+        note.textContent = "다른 분류를 선택하거나 검색어를 변경해 주세요.";
         empty.append(title,note);
         grid.append(empty);
       }
@@ -342,10 +339,164 @@
       }
     };
     segments.dataset.portfolioSectionsInstalled="true";
-    if (!["all","practice","research","learning","case"].includes(activeFilter)) {
+    if (!["all","practice","research","learning"].includes(activeFilter)) {
       activeFilter="all";
     }
     renderProjects();
+    return true;
+  }
+
+
+  // CASES: only the *presentation* is public. Entries are read exclusively
+  // from the site's private, decrypted JSON after a successful unlock.
+  const CASES_ROUTE="#/cases";
+  function caseNavLink(mobile) {
+    const a=document.createElement("a");
+    a.href=CASES_ROUTE;
+    if (!mobile) a.className="nav-link";
+    a.dataset.nav="cases";
+    const icon=document.createElementNS("http://www.w3.org/2000/svg","svg");
+    icon.setAttribute("viewBox","0 0 24 24");
+    icon.setAttribute("fill","none");
+    icon.setAttribute("stroke","currentColor");
+    icon.setAttribute("stroke-width","1.6");
+    icon.setAttribute("aria-hidden","true");
+    icon.setAttribute("stroke-linecap","round");
+    icon.setAttribute("stroke-linejoin","round");
+    const shape=document.createElementNS("http://www.w3.org/2000/svg","path");
+    shape.setAttribute("d","M12 2 20 5v6c0 5-3.1 8.2-8 11-4.9-2.8-8-6-8-11V5l8-3Z");
+    const check=document.createElementNS("http://www.w3.org/2000/svg","path");
+    check.setAttribute("d","m9 12 2 2 4-4");
+    icon.append(shape,check);
+    const label=document.createElement("span");
+    label.textContent="취약점 정리";
+    a.append(icon,label);
+    return a;
+  }
+  function installCaseNavigation() {
+    for(const [nav,mobile] of [
+      [document.querySelector(".app-nav"),false],
+      [document.querySelector(".bottom-nav"),true]
+    ]) {
+      if(!nav||nav.querySelector('[data-nav="cases"]'))continue;
+      const a=caseNavLink(mobile);
+      const before=nav.querySelector('[data-nav="projects"]');
+      if(before)before.after(a);else nav.append(a);
+    }
+  }
+  function installCasesPage() {
+    let view=document.getElementById("view-cases");
+    if(view)return view;
+    const workspace=document.getElementById("workspace");
+    if(!workspace)return null;
+    view=document.createElement("section");
+    view.id="view-cases";
+    view.className="view portfolio-cases-view";
+    view.dataset.view="cases";
+    view.hidden=true;
+    view.setAttribute("aria-labelledby","cases-title");
+    const title=document.createElement("div");
+    title.className="view-title";
+    const h=document.createElement("h1");
+    h.id="cases-title";
+    h.textContent="취약점 정리";
+    h.tabIndex=-1;
+    title.append(h);
+    const list=document.createElement("div");
+    list.id="case-list";
+    list.className="portfolio-case-list";
+    list.setAttribute("role","list");
+    view.append(title,list);
+    const projects=document.getElementById("view-projects");
+    if(projects)projects.after(view);else workspace.append(view);
+    return view;
+  }
+  function renderCasesPage() {
+    const host=document.getElementById("case-list");
+    if(!host)return 0;
+    host.replaceChildren();
+    let count=0;
+    sourceProjects().forEach((p,index)=>{
+      if(projectSection(p)!=="case")return;
+      const row=document.createElement("article");
+      row.className="portfolio-case-row";
+      row.setAttribute("role","listitem");
+      const h=document.createElement("h2");
+      h.className="portfolio-case-name";
+      h.textContent=String(p.title||"제목 없음");
+      const summary=document.createElement("p");
+      summary.className="portfolio-case-summary";
+      const overview=String(p.summary||p.problem||"").replace(/\s+/g," ").trim();
+      summary.textContent=overview.length>170?overview.slice(0,170).trimEnd()+"…":overview;
+      const detail=document.createElement("a");
+      detail.className="portfolio-case-open";
+      detail.href="#/project/"+(index+1);
+      detail.setAttribute("aria-label",h.textContent+" 상세 보기");
+      detail.append(document.createTextNode("상세 보기"));
+      const arrow=document.createElement("span");
+      arrow.setAttribute("aria-hidden","true");
+      arrow.textContent="→";
+      detail.append(arrow);
+      row.append(h,summary,detail);
+      host.append(row);
+      count++;
+    });
+    if(!count){
+      const empty=document.createElement("p");
+      empty.className="portfolio-cases-empty";
+      empty.textContent="등록된 취약점 사례가 없습니다.";
+      host.append(empty);
+    }
+    return count;
+  }
+  function caseRouteDetail() {
+    const m=location.hash.match(/^#\/project\/(\d+)$/);
+    const records=sourceProjects();
+    const index=m?Number(m[1])-1:-1;
+    return index>=0&&index<records.length&&projectSection(records[index])==="case";
+  }
+  function fixCaseDetailNavigation() {
+    const root=document.getElementById("view-detail");
+    if(!root)return;
+    if(!caseRouteDetail()){
+      root.classList.remove("portfolio-case-detail");
+      return;
+    }
+    root.classList.add("portfolio-case-detail");
+    const back=root.querySelector(".back-link");
+    if(back){
+      back.href=CASES_ROUTE;
+      const textNode=Array.from(back.childNodes).find(n=>n.nodeType===3&&n.textContent.trim());
+      if(textNode)textNode.textContent="취약점 정리로 돌아가기";
+      else back.append(document.createTextNode("취약점 정리로 돌아가기"));
+    }
+    const category=root.querySelector(".detail-category > span:first-child");
+    if(category)category.textContent="취약점 정리";
+    document.querySelectorAll('[data-nav="projects"]').forEach(n=>n.removeAttribute("aria-current"));
+    document.querySelectorAll('[data-nav="cases"]').forEach(n=>n.setAttribute("aria-current","page"));
+  }
+  function installCasesRoute() {
+    if(typeof route!=="function"||typeof renderRoute!=="function")return false;
+    if(route.__portfolioCasesRoute===true)return true;
+    const previousRoute=route;
+    route=function(){
+      if(location.hash===CASES_ROUTE)return {view:"cases"};
+      return previousRoute();
+    };
+    route.__portfolioCasesRoute=true;
+    const previousRender=renderRoute;
+    renderRoute=function(focus){
+      previousRender(focus);
+      if(location.hash===CASES_ROUTE){
+        renderCasesPage();
+        const crumb=document.getElementById("current-screen");
+        if(crumb)crumb.textContent="취약점 정리";
+        document.title="취약점 정리 · Portfolio";
+      }else{
+        fixCaseDetailNavigation();
+      }
+    };
+    renderRoute(false);
     return true;
   }
 
@@ -426,7 +577,11 @@
     eliminateRedundancies();
     restoreMissingLearningFromCareer();
     installSectionFilters();
+    installCaseNavigation();
+    installCasesPage();
+    installCasesRoute();
     renderOnePageDetail();
+    fixCaseDetailNavigation();
     const detailRoot = document.getElementById("view-detail");
     if (detailRoot) {
       const observer = new MutationObserver(() => {
