@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261113-learning-source2";
+  const VERSION = "20261113-learning-source3";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -80,7 +80,7 @@
   const CONTENT_FINGERPRINTS = Object.freeze({
     research: [1451807271,1862098197,3726324113,1000703431],
     case: [3541611610,106018211,3112671157],
-    learning: [3651365335,1944395183,3191939619,3348802857,1837791215,2374571855],
+    learning: [3651365335,1944395183,2263963833,3391912787,2465745729,1818730770,3191939619,3348802857,1837791215,2374571855],
     excluded: [1837343204,735539575]
   });
   function contentFingerprint(token) {
@@ -129,10 +129,10 @@
     } catch (_err) { model = null; }
     if (!model) return false;
 
-    const courseToken = CONTENT_FINGERPRINTS.learning[0];
+    const courseTokens = CONTENT_FINGERPRINTS.learning.slice(0,6);
     const mentionsCourse = value => {
       const text = typeof value === "string" ? value : "";
-      return titleFingerprints({ title:text }).includes(courseToken);
+      return titleFingerprints({ title:text }).some(hash => courseTokens.includes(hash));
     };
     if (model.projects.some(p => mentionsCourse(p.title))) return false;
 
