@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261113-cases-view1";
+  const VERSION = "20261113-cases-view2";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -269,6 +269,8 @@
         const node = document.getElementById(countIds[key]);
         if (node) node.textContent=String(counts[key]);
       });
+      const sideCount = document.getElementById("nav-project-count");
+      if (sideCount) sideCount.textContent=String(counts.all).padStart(2,"0");
       segments.querySelectorAll("[data-filter]").forEach(button=>{
         button.setAttribute("aria-pressed",String(button.dataset.filter===intended));
       });
