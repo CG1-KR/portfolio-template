@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261113-cases3";
+  const VERSION = "20261113-learningfix";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -74,12 +74,14 @@
   const PROJECT_SECTIONS = [
     {id:"practice",label:"실무·사례"},
     {id:"research",label:"개발·연구"},
-    {id:"learning",label:"학습"},
+    {id:"learning",label:"학습팀"},
     {id:"case",label:"취약점 정리"}
   ];
   const CONTENT_FINGERPRINTS = Object.freeze({
     research: [1451807271,1862098197,3726324113,1000703431],
-    case: [3541611610,106018211,3112671157]
+    case: [3541611610,106018211,3112671157],
+    learning: [3651365335,1944395183,3191939619,3348802857,1837791215,2374571855],
+    excluded: [1837343204,735539575]
   });
   function contentFingerprint(token) {
     let h = 0x811c9dc5;
@@ -91,27 +93,27 @@
   function titleFingerprints(record) {
     const title = String(record && record.title || "")
       .normalize("NFKC").toLowerCase();
-    const parts = title.match(/[a-z][a-z0-9]*/g) || [];
+    const parts = title.match(/[a-z0-9가-힣]+/g) || [];
     const tokens = parts.slice();
-    // Also match titles that separate a tool name using spaces, underscores,
-    // or hyphens. Keep all case and project names out of public JS.
-    for (let i=0; i<parts.length-1; i++) {
-      tokens.push(parts[i]+parts[i+1]);
-    }
-    return tokens.map(contentFingerprint);
+    // Tolerate space, hyphen, middle dot and underscore variations.
+    for (let i=0; i<parts.length-1; i++) tokens.push(parts[i]+parts[i+1]);
+    for (let i=0; i<parts.length-2; i++) tokens.push(parts[i]+parts[i+1]+parts[i+2]);
+    tokens.push(parts.join(""));
+    return Array.from(new Set(tokens.map(contentFingerprint)));
   }
   function projectSection(record) {
-    if (!record || typeof record !== "object") return "practice";
+    if (!record || typeof record !== "object") return "hidden";
+    const hashes = titleFingerprints(record);
+    // Never surface the retired verification-environment entry in any tab.
+    if (hashes.some(h=>CONTENT_FINGERPRINTS.excluded.includes(h))) return "hidden";
     const explicit = String(record.section || record.group || "").trim().toLowerCase();
     if (["case","vulnerability","vuln","취약점 정리"].includes(explicit)) return "case";
+    if (hashes.some(h=>CONTENT_FINGERPRINTS.case.includes(h))) return "case";
     if (["research","development","dev"].includes(explicit)) return "research";
-    // The earlier encrypted data used the "learning" category for some
-    // development projects. Match the known original tools and case studies
-    // BEFORE checking that legacy category, so they stay in their own tabs.
-    const titleHashes = titleFingerprints(record);
-    if (titleHashes.some(h=>CONTENT_FINGERPRINTS.case.includes(h))) return "case";
-    if (titleHashes.some(h=>CONTENT_FINGERPRINTS.research.includes(h))) return "research";
-    if (["learning","study"].includes(explicit) || record.category==="learning") return "learning";
+    if (hashes.some(h=>CONTENT_FINGERPRINTS.research.includes(h))) return "research";
+    // Only the two explicitly selected education activities are retained.
+    if (hashes.some(h=>CONTENT_FINGERPRINTS.learning.includes(h))) return "learning";
+    if (["learning","study"].includes(explicit) || record.category==="learning") return "hidden";
     if (explicit==="practice" || explicit==="work") return "practice";
     return "practice";
   }
@@ -147,11 +149,15 @@
     // Keep existing buttons and their native event handlers intact.
     practiceButton.dataset.filter = "practice";
     if (practiceButton.firstChild) practiceButton.firstChild.textContent = "실무·사례";
-    if (learningButton.firstChild) learningButton.firstChild.textContent = "학습";
     const researchButton = newSectionButton(PROJECT_SECTIONS[1], "research");
+    const learningTeamButton = newSectionButton(PROJECT_SECTIONS[2], "learning");
     const caseButton = newSectionButton(PROJECT_SECTIONS[3], "case");
+    // Remove the original learning button and replace it with one dedicated
+    // learning-team button; do not leave two learning controls in the toolbar.
     learningButton.before(researchButton);
+    learningButton.before(learningTeamButton);
     learningButton.after(caseButton);
+    learningButton.remove();
 
     const originalRender = renderProjects;
     renderProjects = function() {
@@ -165,7 +171,7 @@
       const records = sourceProjects();
       const sections = records.map(projectSection);
       const counts = {
-        all: records.length,
+        all: sections.filter(id=>id!=="hidden").length,
         practice: sections.filter(id=>id==="practice").length,
         research: sections.filter(id=>id==="research").length,
         learning: sections.filter(id=>id==="learning").length,
