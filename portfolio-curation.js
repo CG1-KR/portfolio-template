@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261113-learning-display2";
+  const VERSION = "20261113-research-order";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -116,6 +116,25 @@
     if (["learning","study"].includes(explicit) || record.category==="learning") return "hidden";
     if (explicit==="practice" || explicit==="work") return "practice";
     return "practice";
+  }
+
+  // The four permitted development entries are ranked by their existing
+  // public fingerprints. Actual titles and portfolio content stay encrypted.
+  // Sorting changes only gallery presentation, never project indices or links.
+  function researchDisplayRank(record) {
+    if (!record) return CONTENT_FINGERPRINTS.research.length;
+    const hashes = titleFingerprints(record);
+    const index = CONTENT_FINGERPRINTS.research.findIndex(hash => hashes.includes(hash));
+    return index < 0 ? CONTENT_FINGERPRINTS.research.length : index;
+  }
+
+  function researchCardRank(card, records) {
+    const link = card.querySelector('a[href*="#/project/"]');
+    const match = link && link.getAttribute("href").match(/#\/project\/(\d+)/);
+    const index = match ? Number(match[1]) - 1 : -1;
+    return index >= 0 && index < records.length
+      ? researchDisplayRank(records[index])
+      : CONTENT_FINGERPRINTS.research.length;
   }
 
   // Restore a missing education card from an existing *decrypted* career
@@ -333,6 +352,9 @@
           return index>=0 && sections[index]===group.id;
         });
         if (!candidates.length) continue;
+        if (group.id==="research") {
+          candidates.sort((a,b)=>researchCardRank(a,records)-researchCardRank(b,records));
+        }
         const section = document.createElement("section");
         section.className="portfolio-section";
         section.dataset.section=group.id;
