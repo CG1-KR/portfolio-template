@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261113-tabs-canonical";
+  const VERSION = "20261113-learning-source";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -116,6 +116,77 @@
     if (["learning","study"].includes(explicit) || record.category==="learning") return "hidden";
     if (explicit==="practice" || explicit==="work") return "practice";
     return "practice";
+  }
+
+  // Restore a missing education card from an existing *decrypted* career
+  // record. We never publish this course's name, date or summary in JavaScript.
+  // If it is absent from both projects and career records, do not invent data.
+  function restoreMissingLearningFromCareer() {
+    let model;
+    try {
+      model = typeof data !== "undefined" && data && Array.isArray(data.projects)
+        ? data : null;
+    } catch (_err) { model = null; }
+    if (!model) return false;
+
+    const courseToken = CONTENT_FINGERPRINTS.learning[0];
+    const mentionsCourse = value => {
+      const text = typeof value === "string" ? value : "";
+      return titleFingerprints({ title:text }).includes(courseToken);
+    };
+    if (model.projects.some(p => mentionsCourse(p.title))) return false;
+
+    const activities = [];
+    for (const field of ["experience","education","activities","certifications"]) {
+      if (Array.isArray(model[field])) {
+        activities.push(...model[field].filter(x => x && typeof x === "object"));
+      }
+    }
+    // The original site's experience timeline often holds the course, even
+    // when the gallery's projects array does not.
+    const found = activities.find(e =>
+      [e.title,e.name,e.description,e.organization,e.period]
+        .some(mentionsCourse)
+    );
+    if (!found) return false;
+
+    const description = String(found.description || found.summary || "").trim();
+    const heading = String(found.title || found.name || "").trim();
+    // Prefer the actual title of the course. When the timeline's title is a
+    // broad grouping, extract only the matching segment of its own text.
+    const segments = [heading,...description.split(/[;\n|]/)]
+      .map(x => x.trim()).filter(Boolean);
+    const coursePart = segments.find(mentionsCourse);
+    if (!coursePart) return false;
+
+    let courseTitle = mentionsCourse(heading) ? heading : coursePart;
+    courseTitle = courseTitle.replace(/^\s*20\d{2}[.\-/]\d{1,2}\s*[:·\-–]?\s*/, "").trim();
+    if (courseTitle.length > 120) courseTitle = courseTitle.slice(0,120).trim();
+
+    const periodFromSource = String(found.period || found.date || "").trim();
+    const dateMatch = coursePart.match(/20\d{2}[.\-/]\d{1,2}/);
+    const period = periodFromSource || (dateMatch ? dateMatch[0] : "");
+    const context = description || coursePart;
+    const organization = String(found.organization || "").trim();
+    const record = {
+      title:courseTitle,
+      category:"learning",
+      section:"learning",
+      period:period,
+      role:organization,
+      summary:context,
+      problem:context,
+      approach:context,
+      outcome:"",
+      tags:[],
+      url:""
+    };
+    // Insert before the first already-known learning item, preserving the
+    // other entries and the numeric detail routes used by the original app.
+    const at = model.projects.findIndex(p => projectSection(p)==="learning");
+    model.projects.splice(at < 0 ? model.projects.length : at,0,record);
+    if (typeof renderProjects==="function") renderProjects();
+    return true;
   }
 
   // Build one canonical toolbar. The encrypted portfolio may already include
@@ -349,6 +420,7 @@
   function enableUnlockedView() {
     if (!document.body || document.body.dataset.neumorphism !== "portfolio") return;
     eliminateRedundancies();
+    restoreMissingLearningFromCareer();
     installSectionFilters();
     renderOnePageDetail();
     const detailRoot = document.getElementById("view-detail");
