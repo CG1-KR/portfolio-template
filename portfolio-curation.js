@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261113-cases-view2";
+  const VERSION = "20261113-learning-label";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -75,7 +75,7 @@
   const PROJECT_SECTIONS = [
     {id:"practice",label:"실무·사례"},
     {id:"research",label:"개발·연구"},
-    {id:"learning",label:"학습팀"}
+    {id:"learning",label:"학습"}
   ];
   const CONTENT_FINGERPRINTS = Object.freeze({
     research: [1451807271,1862098197,3726324113,1000703431],
