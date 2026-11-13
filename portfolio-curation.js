@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261113-research-order2";
+  const VERSION = "20261113-other-practice";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -79,6 +79,7 @@
   ];
   const CONTENT_FINGERPRINTS = Object.freeze({
     research: [1451807271,1862098197,3726324113,1000703431],
+    practice: [1350233264],
     case: [3541611610,106018211,3112671157],
     learning: [3651365335,1944395183,2263963833,3391912787,2465745729,1818730770,3191939619,3348802857,1837791215,2374571855],
     excluded: [1837343204,735539575]
@@ -111,6 +112,9 @@
     if (hashes.some(h=>CONTENT_FINGERPRINTS.case.includes(h))) return "case";
     if (["research","development","dev"].includes(explicit)) return "research";
     if (hashes.some(h=>CONTENT_FINGERPRINTS.research.includes(h))) return "research";
+    // Existing general work entries may carry an old learning category.
+    // Restore the intended practical-work classification by exact title.
+    if (hashes.some(h=>CONTENT_FINGERPRINTS.practice.includes(h))) return "practice";
     // Only the two explicitly selected education activities are retained.
     if (hashes.some(h=>CONTENT_FINGERPRINTS.learning.includes(h))) return "learning";
     if (["learning","study"].includes(explicit) || record.category==="learning") return "hidden";
