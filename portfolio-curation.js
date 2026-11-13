@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261113-learningfix";
+  const VERSION = "20261113-tabs-canonical";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -118,19 +118,28 @@
     return "practice";
   }
 
-  function newSectionButton(group, id) {
+  // Build one canonical toolbar. The encrypted portfolio may already include
+  // project/research/learning-team controls with different data-filter names.
+  // Appending extra controls to those produces duplicate visible tabs.
+  // Replace the entire control set instead of guessing which old button to drop.
+  function newSectionButton(group) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "filter";
-    button.dataset.filter = id;
-    button.setAttribute("aria-pressed","false");
+    button.dataset.filter = group.id;
+    button.setAttribute("aria-pressed", "false");
     button.append(document.createTextNode(group.label));
     const counter = document.createElement("span");
     counter.className = "filter-count";
-    counter.id = "count-"+id;
+    counter.id = {
+      all:"count-all", practice:"count-project", research:"count-research",
+      learning:"count-learning", case:"count-case"
+    }[group.id];
     button.append(counter);
-    button.addEventListener("click", () => {
-      activeFilter = id;
+    button.addEventListener("click", event => {
+      // Do not allow legacy delegated filter handlers to react to our buttons.
+      if (event && typeof event.stopPropagation === "function") event.stopPropagation();
+      activeFilter = group.id;
       renderProjects();
     });
     return button;
@@ -141,23 +150,24 @@
     const segments = document.querySelector("#view-projects .segments");
     if (!grid || !segments || typeof renderProjects!=="function" || !sourceProjects().length) return false;
     if (segments.dataset.portfolioSectionsInstalled==="true") return true;
-    const practiceButton = segments.querySelector('[data-filter="project"]');
-    const learningButton = segments.querySelector('[data-filter="learning"]');
-    const allButton = segments.querySelector('[data-filter="all"]');
-    if (!allButton || !practiceButton || !learningButton) return false;
 
-    // Keep existing buttons and their native event handlers intact.
-    practiceButton.dataset.filter = "practice";
-    if (practiceButton.firstChild) practiceButton.firstChild.textContent = "실무·사례";
-    const researchButton = newSectionButton(PROJECT_SECTIONS[1], "research");
-    const learningTeamButton = newSectionButton(PROJECT_SECTIONS[2], "learning");
-    const caseButton = newSectionButton(PROJECT_SECTIONS[3], "case");
-    // Remove the original learning button and replace it with one dedicated
-    // learning-team button; do not leave two learning controls in the toolbar.
-    learningButton.before(researchButton);
-    learningButton.before(learningTeamButton);
-    learningButton.after(caseButton);
-    learningButton.remove();
+    const intendedFilters = [{id:"all",label:"전체"}].concat(PROJECT_SECTIONS);
+    const buttons = intendedFilters.map(newSectionButton);
+    // Preserve unknown legacy count targets invisibly if the original renderer
+    // updates them. They are no longer independently clickable filters.
+    const reservedIds = new Set(buttons.map(b => b.querySelector(".filter-count").id));
+    const legacyIds = Array.from(segments.querySelectorAll("[id]"))
+      .map(node => node.id)
+      .filter(id => id && !reservedIds.has(id) && /^count[-_]/.test(id));
+    const compatibility = document.createElement("span");
+    compatibility.hidden = true;
+    compatibility.setAttribute("aria-hidden", "true");
+    for (const id of new Set(legacyIds)) {
+      const node = document.createElement("span");
+      node.id = id;
+      compatibility.append(node);
+    }
+    segments.replaceChildren(...buttons, compatibility);
 
     const originalRender = renderProjects;
     renderProjects = function() {
