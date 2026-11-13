@@ -1,0 +1,557 @@
+/* Portfolio neumorphism | 2026-11-13
+   Shared visual system for the StatiCrypt entry screen and decrypted portfolio.
+   No authentication, content, or navigation logic is changed by this stylesheet. */
+:root {
+  --neu-bg: #e9edf7;
+  --neu-surface: #edf1f9;
+  --neu-highlight: #f8faff;
+  --neu-ink: #293651;
+  --neu-muted: #65738f;
+  --neu-accent: #546ccb;
+  --neu-accent-hover: #4359b4;
+  --neu-border: rgba(255, 255, 255, .77);
+  --neu-raised: 11px 11px 25px rgba(139, 151, 179, .29),
+                -11px -11px 25px rgba(255, 255, 255, .96);
+  --neu-raised-small: 5px 5px 13px rgba(141, 152, 181, .27),
+                      -5px -5px 13px rgba(255, 255, 255, .95);
+  --neu-pressed: inset 6px 6px 13px rgba(147, 158, 187, .28),
+                 inset -6px -6px 13px rgba(255, 255, 255, .94);
+  --neu-focus: 0 0 0 3px rgba(94, 118, 211, .28);
+}
+
+/* ---------- Unlocked-independent password screen ---------- */
+html.staticrypt-html { min-height: 100%; height: auto; }
+body.staticrypt-body {
+  min-height: 100svh;
+  height: auto;
+  margin: 0;
+  overflow-x: hidden;
+  background: radial-gradient(ellipse 58% 58% at 2% 3%, #f5f6ff 0%, transparent 75%),
+              radial-gradient(ellipse 66% 70% at 100% 94%, #dce5fa 0%, transparent 74%),
+              var(--neu-bg);
+  color: var(--neu-ink);
+  font-family: "Pretendard Variable", Pretendard, "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+}
+body.staticrypt-body::before,
+body.staticrypt-body::after {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  width: min(45vw, 600px);
+  height: min(45vw, 600px);
+  border-radius: 35%;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, .53);
+}
+body.staticrypt-body::before {
+  top: -31vw; left: -18vw;
+  transform: rotate(24deg);
+  background: linear-gradient(130deg, rgba(255,255,255,.57), rgba(213,222,250,.20));
+}
+body.staticrypt-body::after {
+  bottom: -32vw; right: -19vw;
+  transform: rotate(-26deg);
+  background: linear-gradient(220deg, rgba(255,255,255,.55), rgba(200,216,248,.18));
+}
+.staticrypt-content {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  height: auto;
+  margin: 0;
+  padding: 42px 20px;
+  background: transparent;
+  color: var(--neu-ink);
+  font-family: inherit;
+}
+.staticrypt-page {
+  width: min(100%, 550px);
+  margin: 0 auto;
+  padding: 0;
+}
+.staticrypt-form {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: clamp(32px, 6vw, 56px);
+  border: 1px solid var(--neu-border);
+  border-radius: 44px;
+  text-align: center;
+  background: linear-gradient(145deg, rgba(250,252,255,.76), rgba(228,234,249,.75));
+  box-shadow: 20px 20px 43px rgba(139,151,181,.28),
+              -18px -18px 45px rgba(255,255,255,.93),
+              inset 1px 1px 1px rgba(255,255,255,.94);
+}
+.neu-login-icon {
+  width: 86px;
+  height: 86px;
+  margin: 0 auto 29px;
+  display: grid;
+  place-items: center;
+  border-radius: 27px;
+  background: linear-gradient(145deg, #f5f8ff, #dfe7fa);
+  color: #7b8fd3;
+  border: 1px solid rgba(255,255,255,.80);
+  box-shadow: 8px 8px 19px rgba(143,157,190,.29),
+              -8px -8px 18px #fff,
+              inset 1px 1px 1px rgba(255,255,255,.95);
+}
+.neu-login-icon svg { width: 42px; height: 42px; stroke-width: 1.5; }
+.staticrypt-instructions {
+  margin: 0 0 36px;
+}
+.staticrypt-instructions .staticrypt-title {
+  margin: 0 0 14px;
+  color: var(--neu-ink);
+  font-size: clamp(29px, 5vw, 38px);
+  line-height: 1.3;
+  font-weight: 740;
+  letter-spacing: -.055em;
+}
+.staticrypt-instructions p:not(.staticrypt-title) {
+  color: var(--neu-muted);
+  font-size: clamp(13px, 2vw, 15px);
+  line-height: 1.75;
+  margin: 0;
+  word-break: keep-all;
+}
+.staticrypt-hr { display: none; }
+.staticrypt-form .staticrypt-password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(194,205,232,.63);
+  border-radius: 19px;
+  width: 100%;
+  height: 62px;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0 0 24px;
+  background: #eaf0fa;
+  box-shadow: var(--neu-pressed);
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+.staticrypt-form .staticrypt-password-container:focus-within {
+  border-color: #9faee4;
+  box-shadow: var(--neu-pressed), var(--neu-focus);
+}
+.neu-input-lock {
+  pointer-events: none;
+  position: absolute;
+  left: 21px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  color: #8291b4;
+  display: grid;
+  place-items: center;
+}
+.neu-input-lock svg { width: 20px; height: 20px; }
+.staticrypt-form #staticrypt-password,
+.staticrypt-form #staticrypt-password[type="text"] {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0 58px 0 52px;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: inherit;
+  outline: 0;
+  background: transparent;
+  color: var(--neu-ink);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: .01em;
+}
+.staticrypt-form #staticrypt-password::placeholder {
+  color: #7c89a5;
+  opacity: 1;
+}
+.staticrypt-form .staticrypt-toggle-password-visibility {
+  z-index: 1;
+  cursor: pointer;
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  padding: 10px;
+  box-sizing: content-box;
+  transform: translateY(-50%);
+  opacity: .63;
+  border-radius: 12px;
+  transition: opacity .2s, background .2s;
+}
+.staticrypt-form .staticrypt-toggle-password-visibility:hover {
+  opacity: 1;
+  background: rgba(255,255,255,.55);
+}
+.staticrypt-form .staticrypt-decrypt-button {
+  display: block;
+  width: 100%;
+  min-height: 60px;
+  padding: 15px 20px;
+  border: 1px solid rgba(255,255,255,.48);
+  border-radius: 20px;
+  outline: none;
+  background: linear-gradient(145deg, #8094df, #546bc7);
+  color: #fff;
+  box-shadow: 7px 9px 19px rgba(105,124,190,.34),
+              -4px -4px 12px rgba(255,255,255,.95),
+              inset 1px 1px 1px rgba(255,255,255,.4);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  text-transform: none;
+  cursor: pointer;
+  transition: transform .17s ease, box-shadow .17s ease, filter .17s ease;
+}
+.staticrypt-form .staticrypt-decrypt-button:hover,
+.staticrypt-form .staticrypt-decrypt-button:focus,
+.staticrypt-form .staticrypt-decrypt-button:active {
+  background: linear-gradient(145deg, #7288d8, #495fbb);
+  filter: none;
+}
+.staticrypt-form .staticrypt-decrypt-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 9px 13px 23px rgba(104,123,188,.34), -4px -4px 12px #fff;
+}
+.staticrypt-form .staticrypt-decrypt-button:active {
+  transform: translateY(1px);
+  box-shadow: inset 4px 4px 12px rgba(49,65,136,.27), inset -3px -3px 8px rgba(255,255,255,.14);
+}
+.staticrypt-form .staticrypt-decrypt-button:focus-visible,
+.staticrypt-form #staticrypt-password:focus-visible {
+  outline: 3px solid #7188d6;
+  outline-offset: 3px;
+}
+.staticrypt-form label.staticrypt-remember {
+  margin: -7px 0 18px;
+  justify-content: flex-start;
+  color: var(--neu-muted);
+  font-size: 13px;
+}
+.staticrypt-spinner-container {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  height: auto;
+  background: transparent;
+}
+.staticrypt-spinner { border-color: #8495c7; border-right-color: transparent; }
+
+/* ---------- Decrypted portfolio: retain original structure & scripting ---------- */
+body[data-neumorphism="portfolio"] {
+  --paper: #e9eef8;
+  --surface: #edf2fa;
+  --ink: #263550;
+  --muted: #62738f;
+  --line: #dbe2f0;
+  --green: #536bc7;
+  --tint: #e0e8fa;
+  --lime: #d9e3fb;
+  --radius: 20px;
+  color: var(--ink);
+  background: #e9eef8;
+}
+body[data-neumorphism="portfolio"] .app-shell {
+  background: #e9eef8;
+}
+body[data-neumorphism="portfolio"] .workspace {
+  background: radial-gradient(ellipse 48% 46% at 10% 5%, rgba(255,255,255,.54), transparent 85%),
+              radial-gradient(ellipse 55% 50% at 100% 95%, rgba(201,211,247,.32), transparent 80%),
+              #e9eef8;
+}
+body[data-neumorphism="portfolio"] .app-sidebar {
+  background: #ebeff8;
+  border-right: 1px solid rgba(255,255,255,.83);
+  box-shadow: 6px 0 16px rgba(138,149,177,.16);
+  z-index: 3;
+}
+body[data-neumorphism="portfolio"] .app-topbar {
+  background: rgba(236,241,250,.91);
+  border-bottom: 1px solid rgba(255,255,255,.83);
+  box-shadow: 0 5px 12px rgba(139,151,182,.12);
+  backdrop-filter: blur(16px);
+}
+body[data-neumorphism="portfolio"] .brand-mark,
+body[data-neumorphism="portfolio"] .account-avatar,
+body[data-neumorphism="portfolio"] .profile-avatar,
+body[data-neumorphism="portfolio"] .contact-link .link-symbol {
+  border: 1px solid rgba(255,255,255,.82);
+  background: linear-gradient(145deg, #f3f6ff, #dce6f8);
+  color: #617acf;
+  border-radius: 15px;
+  box-shadow: var(--neu-raised-small);
+}
+body[data-neumorphism="portfolio"] .brand-mark {
+  border-radius: 12px;
+}
+body[data-neumorphism="portfolio"] .nav-link,
+body[data-neumorphism="portfolio"] .bottom-nav a {
+  border-radius: 14px;
+  transition: box-shadow .18s, color .18s, background .18s;
+}
+body[data-neumorphism="portfolio"] .nav-link:not([aria-current]):hover,
+body[data-neumorphism="portfolio"] .bottom-nav a:not([aria-current]):hover {
+  background: #e9eef9;
+  box-shadow: var(--neu-raised-small);
+}
+body[data-neumorphism="portfolio"] .nav-link[aria-current="page"],
+body[data-neumorphism="portfolio"] .bottom-nav a[aria-current="page"] {
+  border-color: transparent;
+  background: #e0e8f8;
+  color: #465fb9;
+  box-shadow: var(--neu-pressed);
+}
+body[data-neumorphism="portfolio"] .app-breadcrumb strong,
+body[data-neumorphism="portfolio"] .nav-count,
+body[data-neumorphism="portfolio"] .view-state,
+body[data-neumorphism="portfolio"] .timeline-date,
+body[data-neumorphism="portfolio"] .card-kicker {
+  color: #536a96;
+}
+body[data-neumorphism="portfolio"] .status-dot { background: #7489d5; }
+body[data-neumorphism="portfolio"] .project-card,
+body[data-neumorphism="portfolio"] .detail-main,
+body[data-neumorphism="portfolio"] .detail-meta,
+body[data-neumorphism="portfolio"] .profile-overview,
+body[data-neumorphism="portfolio"] .info-panel,
+body[data-neumorphism="portfolio"] .contact-intro,
+body[data-neumorphism="portfolio"] .contact-link,
+body[data-neumorphism="portfolio"] .contact-empty,
+body[data-neumorphism="portfolio"] .empty-state,
+body[data-neumorphism="portfolio"] .edit-card {
+  background: linear-gradient(145deg, #f2f6fc, #e7edf8);
+  border: 1px solid var(--neu-border);
+  border-radius: 21px;
+  box-shadow: var(--neu-raised);
+}
+body[data-neumorphism="portfolio"] .project-card {
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+body[data-neumorphism="portfolio"] .project-card:hover,
+body[data-neumorphism="portfolio"] .project-card.featured:hover {
+  transform: translateY(-3px);
+  border-color: rgba(180,192,231,.8);
+  box-shadow: 12px 14px 26px rgba(140,150,181,.31),
+              -9px -9px 22px rgba(255,255,255,.93);
+}
+body[data-neumorphism="portfolio"] .project-card.featured {
+  border-color: rgba(166,183,233,.9);
+}
+body[data-neumorphism="portfolio"] .project-cover,
+body[data-neumorphism="portfolio"] .project-card:nth-child(2n) .project-cover,
+body[data-neumorphism="portfolio"] .project-card:nth-child(3n) .project-cover {
+  background: linear-gradient(155deg, #dee6fa, #edf2fd);
+  box-shadow: inset -6px -6px 17px rgba(255,255,255,.72),
+              inset 6px 6px 15px rgba(160,173,205,.21);
+}
+body[data-neumorphism="portfolio"] .cover-window {
+  background: linear-gradient(145deg,#f5f8ff,#e2e9f9);
+  border: 1px solid rgba(255,255,255,.92);
+  border-radius: 13px;
+  box-shadow: var(--neu-raised-small);
+}
+body[data-neumorphism="portfolio"] .window-icon {
+  background: #e2e9fa;
+  color: #637ed0;
+  border-radius: 10px;
+  box-shadow: var(--neu-pressed);
+}
+body[data-neumorphism="portfolio"] .segments {
+  background: #e5eaf6;
+  border: 1px solid rgba(255,255,255,.60);
+  border-radius: 14px;
+  box-shadow: var(--neu-pressed);
+}
+body[data-neumorphism="portfolio"] .filter {
+  border-radius: 11px;
+  color: #61718d;
+}
+body[data-neumorphism="portfolio"] .filter[aria-pressed="true"] {
+  border-color: rgba(255,255,255,.9);
+  background: linear-gradient(145deg, #fff, #e7edf9);
+  color: #405eaf;
+  box-shadow: 3px 3px 8px rgba(140,151,182,.25), -3px -3px 7px #fff;
+}
+body[data-neumorphism="portfolio"] .search-wrap input,
+body[data-neumorphism="portfolio"] .field input,
+body[data-neumorphism="portfolio"] .field textarea,
+body[data-neumorphism="portfolio"] .field select {
+  border: 1px solid rgba(190,200,225,.73);
+  border-radius: 13px;
+  background: #e9eef9;
+  color: var(--neu-ink);
+  box-shadow: var(--neu-pressed);
+}
+body[data-neumorphism="portfolio"] .search-wrap input:focus,
+body[data-neumorphism="portfolio"] .field input:focus,
+body[data-neumorphism="portfolio"] .field textarea:focus,
+body[data-neumorphism="portfolio"] .field select:focus {
+  outline: 2px solid #7791dd;
+  outline-offset: 2px;
+}
+body[data-neumorphism="portfolio"] .tags span,
+body[data-neumorphism="portfolio"] .featured-label,
+body[data-neumorphism="portfolio"] .hero-badge {
+  border: 1px solid rgba(255,255,255,.85);
+  border-radius: 9px;
+  color: #526aa5;
+  background: #e5ebf9;
+  box-shadow: 3px 3px 7px rgba(153,163,189,.21), -3px -3px 7px rgba(255,255,255,.86);
+}
+body[data-neumorphism="portfolio"] .button,
+body[data-neumorphism="portfolio"] .project-detail-button {
+  border: 1px solid rgba(255,255,255,.51);
+  border-radius: 12px;
+  background: linear-gradient(145deg, #7e90dc, #5169c4);
+  color: #fff;
+  box-shadow: 5px 6px 13px rgba(107,122,186,.28), -3px -3px 11px rgba(255,255,255,.88);
+  transition: transform .16s, background .16s, box-shadow .16s;
+}
+body[data-neumorphism="portfolio"] .button:hover,
+body[data-neumorphism="portfolio"] .project-detail-button:hover {
+  background: linear-gradient(145deg, #687dce, #465cb3);
+  color: #fff;
+  transform: translateY(-2px);
+}
+body[data-neumorphism="portfolio"] .button.secondary,
+body[data-neumorphism="portfolio"] .edit-trigger,
+body[data-neumorphism="portfolio"] .close-button,
+body[data-neumorphism="portfolio"] .icon-button {
+  border: 1px solid rgba(255,255,255,.80);
+  border-radius: 12px;
+  background: linear-gradient(145deg, #f5f7ff, #e1e8f6);
+  color: #4b64b5;
+  box-shadow: var(--neu-raised-small);
+}
+body[data-neumorphism="portfolio"] .button.secondary:hover,
+body[data-neumorphism="portfolio"] .edit-trigger:hover,
+body[data-neumorphism="portfolio"] .close-button:hover,
+body[data-neumorphism="portfolio"] .icon-button:hover {
+  background: #e6edfa;
+  border-color: #bdc9eb;
+  color: #4059ae;
+}
+body[data-neumorphism="portfolio"] .detail-main,
+body[data-neumorphism="portfolio"] .detail-meta { overflow: hidden; }
+body[data-neumorphism="portfolio"] .detail-tabs {
+  background: #e8eef9;
+  border-bottom: 1px solid rgba(255,255,255,.80);
+}
+body[data-neumorphism="portfolio"] .detail-tab[aria-selected="true"] {
+  color: #485eb2;
+  border-bottom-color: #7388d7;
+}
+body[data-neumorphism="portfolio"] .detail-article { background: transparent; }
+body[data-neumorphism="portfolio"] .timeline-row {
+  border-bottom-color: rgba(156,171,205,.30);
+}
+body[data-neumorphism="portfolio"] .contact-link:hover {
+  background: #eef3fd;
+  border-color: #bbc8e9;
+  transform: translateY(-2px);
+}
+body[data-neumorphism="portfolio"] .local-banner {
+  background: #e2e9fa;
+  color: #4c618c;
+  border-bottom-color: rgba(255,255,255,.73);
+}
+body[data-neumorphism="portfolio"] .bottom-nav {
+  background: rgba(234,240,249,.96);
+  border-top: 1px solid rgba(255,255,255,.80);
+  box-shadow: 0 -7px 17px rgba(139,151,182,.16);
+}
+body[data-neumorphism="portfolio"] dialog {
+  background: #edf2fa;
+  color: var(--neu-ink);
+  border: 1px solid rgba(255,255,255,.87);
+  border-radius: 25px;
+  box-shadow: 18px 18px 43px rgba(76,88,122,.35);
+}
+body[data-neumorphism="portfolio"] dialog::backdrop {
+  background: rgba(31,41,73,.52);
+  backdrop-filter: blur(5px);
+}
+body[data-neumorphism="portfolio"] .dialog-head,
+body[data-neumorphism="portfolio"] .editor-tabs,
+body[data-neumorphism="portfolio"] .editor-foot {
+  background: #e8edf8;
+  border-color: rgba(255,255,255,.80);
+}
+body[data-neumorphism="portfolio"] .editor-tab {
+  border-radius: 10px;
+}
+body[data-neumorphism="portfolio"] .editor-tab[aria-selected="true"] {
+  color: #465db5;
+  background: #e2e9fa;
+  box-shadow: var(--neu-pressed);
+}
+body[data-neumorphism="portfolio"] .notice {
+  background: #e2eafb;
+  color: #435f99;
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: 14px;
+}
+body[data-neumorphism="portfolio"] .toast {
+  background: #34446f;
+  color: #fff;
+  border-radius: 13px;
+  box-shadow: 8px 8px 20px rgba(85,95,131,.28);
+}
+body[data-neumorphism="portfolio"] .empty-state,
+body[data-neumorphism="portfolio"] .contact-empty {
+  border-style: dashed;
+  border-color: #c4cee6;
+}
+
+/* ---------- Compact layouts, accessibility and print ---------- */
+@media (max-width: 600px) {
+  .staticrypt-content { padding: 24px 15px; }
+  .staticrypt-form { border-radius: 30px; padding: 34px 25px 31px; }
+  .neu-login-icon { width: 72px; height: 72px; margin-bottom: 25px; border-radius: 23px; }
+  .neu-login-icon svg { width: 36px; height: 36px; }
+  .staticrypt-instructions { margin-bottom: 29px; }
+  .staticrypt-form .staticrypt-password-container { height: 58px; margin-bottom: 18px; }
+  .staticrypt-form .staticrypt-decrypt-button { min-height: 58px; }
+  body[data-neumorphism="portfolio"] .project-card,
+  body[data-neumorphism="portfolio"] .detail-main,
+  body[data-neumorphism="portfolio"] .detail-meta,
+  body[data-neumorphism="portfolio"] .profile-overview,
+  body[data-neumorphism="portfolio"] .info-panel,
+  body[data-neumorphism="portfolio"] .contact-intro,
+  body[data-neumorphism="portfolio"] .contact-link {
+    border-radius: 16px;
+    box-shadow: 5px 5px 13px rgba(142,153,180,.24), -5px -5px 13px rgba(255,255,255,.93);
+  }
+  body[data-neumorphism="portfolio"] .bottom-nav a { border-radius: 10px; }
+  body[data-neumorphism="portfolio"] .project-card:hover { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .staticrypt-form .staticrypt-decrypt-button,
+  body[data-neumorphism="portfolio"] .project-card,
+  body[data-neumorphism="portfolio"] .button,
+  body[data-neumorphism="portfolio"] .contact-link { transition: none; }
+}
+@media (forced-colors: active) {
+  .staticrypt-form .staticrypt-password-container,
+  .staticrypt-form .staticrypt-decrypt-button,
+  body[data-neumorphism="portfolio"] .button { border: 1px solid ButtonText; }
+}
+@media print {
+  body[data-neumorphism="portfolio"],
+  body[data-neumorphism="portfolio"] .workspace,
+  body[data-neumorphism="portfolio"] .project-cover { background: white !important; }
+  body[data-neumorphism="portfolio"] .project-card,
+  body[data-neumorphism="portfolio"] .detail-main,
+  body[data-neumorphism="portfolio"] .detail-meta,
+  body[data-neumorphism="portfolio"] .profile-overview,
+  body[data-neumorphism="portfolio"] .info-panel,
+  body[data-neumorphism="portfolio"] .contact-intro { box-shadow: none !important; border: 1px solid #ccd2de; }
+}
