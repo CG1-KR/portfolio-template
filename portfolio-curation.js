@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261113-cases";
+  const VERSION = "20261113-cases2";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -149,7 +149,7 @@
       const intended = activeFilter;
       // The original gallery understands only "all", "project" and "learning".
       // Filter/sort into the four sections after it renders the source cards.
-      if (["practice","research","case"].includes(intended)) activeFilter="project";
+      if (["practice","research","case"].includes(intended)) activeFilter="all";
       try { originalRender(); }
       finally { activeFilter=intended; }
 
