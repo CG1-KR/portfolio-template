@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261113-research-order";
+  const VERSION = "20261113-research-order2";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -129,12 +129,44 @@
   }
 
   function researchCardRank(card, records) {
-    const link = card.querySelector('a[href*="#/project/"]');
-    const match = link && link.getAttribute("href").match(/#\/project\/(\d+)/);
+    // Rank by the actual visible card heading first. A decrypted portfolio may
+    // load a browser-local edited model whose indices differ from embedded JSON.
+    // Reading the card avoids assigning ranks to the wrong project.
+    const title = card && card.querySelector("h2, .project-title, h3");
+    if (title && title.textContent.trim()) {
+      const rank = researchDisplayRank({title:title.textContent.trim()});
+      if (rank < CONTENT_FINGERPRINTS.research.length) return rank;
+    }
+    const link = card && card.querySelector('a[href*="#/project/"]');
+    const match = link && link.getAttribute("href") &&
+      link.getAttribute("href").match(/#\/project\/(\d+)/);
     const index = match ? Number(match[1]) - 1 : -1;
     return index >= 0 && index < records.length
       ? researchDisplayRank(records[index])
       : CONTENT_FINGERPRINTS.research.length;
+  }
+
+  // Re-establish visual order when the original portfolio re-renders cards
+  // on search, filter changes, edits or browser-local draft restoration.
+  function synchronizeResearchDisplayOrder() {
+    const grid = document.getElementById("project-grid");
+    if (!grid) return false;
+    const sections = grid.querySelectorAll(
+      '.portfolio-section[data-section="research"] .portfolio-section-grid'
+    );
+    let changed = false;
+    for (const row of sections) {
+      const before = Array.from(row.querySelectorAll(":scope > .project-card"));
+      if (before.length < 2) continue;
+      const after = before.slice().sort((a,b)=>
+        researchCardRank(a,[])-researchCardRank(b,[])
+      );
+      if (after.some((card,i)=>card!==before[i])) {
+        row.append(...after);
+        changed = true;
+      }
+    }
+    return changed;
   }
 
   // Restore a missing education card from an existing *decrypted* career
@@ -247,8 +279,12 @@
     normalizeLearningLabels();
     // Other legacy renderers may replace the filter buttons or section
     // headings asynchronously; correct those mutations without retry loops.
-    const observer = new MutationObserver(() => normalizeLearningLabels());
+    const observer = new MutationObserver(() => {
+      normalizeLearningLabels();
+      synchronizeResearchDisplayOrder();
+    });
     observer.observe(host, {childList:true,characterData:true,subtree:true});
+    synchronizeResearchDisplayOrder();
   }
 
   // Build one canonical toolbar. The encrypted portfolio may already include
@@ -401,6 +437,7 @@
         headingCount.textContent = (searching?"검색 결과 ":"전체 ")+shown+"개";
       }
       normalizeLearningLabels();
+      synchronizeResearchDisplayOrder();
     };
     segments.dataset.portfolioSectionsInstalled="true";
     if (!["all","practice","research","learning"].includes(activeFilter)) {
