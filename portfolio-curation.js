@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261113-cases2";
+  const VERSION = "20261113-cases3";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -90,20 +90,29 @@
   }
   function titleFingerprints(record) {
     const title = String(record && record.title || "")
-      .normalize("NFKC").toLowerCase().replace(/[_-]/g,"");
+      .normalize("NFKC").toLowerCase();
     const parts = title.match(/[a-z][a-z0-9]*/g) || [];
-    return parts.map(contentFingerprint);
+    const tokens = parts.slice();
+    // Also match titles that separate a tool name using spaces, underscores,
+    // or hyphens. Keep all case and project names out of public JS.
+    for (let i=0; i<parts.length-1; i++) {
+      tokens.push(parts[i]+parts[i+1]);
+    }
+    return tokens.map(contentFingerprint);
   }
   function projectSection(record) {
     if (!record || typeof record !== "object") return "practice";
     const explicit = String(record.section || record.group || "").trim().toLowerCase();
     if (["case","vulnerability","vuln","취약점 정리"].includes(explicit)) return "case";
     if (["research","development","dev"].includes(explicit)) return "research";
-    if (["learning","study"].includes(explicit) || record.category==="learning") return "learning";
-    if (explicit==="practice" || explicit==="work") return "practice";
+    // The earlier encrypted data used the "learning" category for some
+    // development projects. Match the known original tools and case studies
+    // BEFORE checking that legacy category, so they stay in their own tabs.
     const titleHashes = titleFingerprints(record);
     if (titleHashes.some(h=>CONTENT_FINGERPRINTS.case.includes(h))) return "case";
     if (titleHashes.some(h=>CONTENT_FINGERPRINTS.research.includes(h))) return "research";
+    if (["learning","study"].includes(explicit) || record.category==="learning") return "learning";
+    if (explicit==="practice" || explicit==="work") return "practice";
     return "practice";
   }
 
@@ -149,7 +158,7 @@
       const intended = activeFilter;
       // The original gallery understands only "all", "project" and "learning".
       // Filter/sort into the four sections after it renders the source cards.
-      if (["practice","research","case"].includes(intended)) activeFilter="all";
+      if (intended!=="all") activeFilter="all";
       try { originalRender(); }
       finally { activeFilter=intended; }
 
