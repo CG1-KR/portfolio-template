@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261113-learning-label";
+  const VERSION = "20261113-learning-display2";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -193,6 +193,45 @@
     return true;
   }
 
+  // Legacy encrypted templates can regenerate their own labels after startup.
+  // Normalize only the learning filter/section presentation; leave project
+  // titles, evidence, details, and the encrypted source untouched.
+  function normalizeLearningLabels() {
+    const host = document.getElementById("view-projects");
+    if (!host) return;
+    const stale = /^학습[\s·ㆍ.-]*팀$/u;
+    const filter = host.querySelector(".segments [data-filter='learning']");
+    if (filter) {
+      // Keep count spans, click handlers and accessibility properties intact.
+      const first = filter.firstChild;
+      if (first && first.nodeType === 3 && stale.test(first.textContent.trim())) {
+        first.textContent = "학습";
+      } else if (first && first.nodeType === 1 && stale.test(first.textContent.trim())) {
+        first.textContent = "학습";
+      }
+    }
+    const titleSelectors = [
+      ".portfolio-section[data-section='learning'] .portfolio-section-name h2",
+      ".portfolio-section[data-section='learning'] .card-kicker > span:first-child"
+    ];
+    for (const selector of titleSelectors) {
+      host.querySelectorAll(selector).forEach(node => {
+        if (stale.test(node.textContent.trim())) node.textContent = "학습";
+      });
+    }
+  }
+
+  function watchLearningLabels() {
+    const host = document.getElementById("view-projects");
+    if (!host || host.dataset.learningLabelWatcher === "1") return;
+    host.dataset.learningLabelWatcher = "1";
+    normalizeLearningLabels();
+    // Other legacy renderers may replace the filter buttons or section
+    // headings asynchronously; correct those mutations without retry loops.
+    const observer = new MutationObserver(() => normalizeLearningLabels());
+    observer.observe(host, {childList:true,characterData:true,subtree:true});
+  }
+
   // Build one canonical toolbar. The encrypted portfolio may already include
   // project/research/learning-team controls with different data-filter names.
   // Appending extra controls to those produces duplicate visible tabs.
@@ -339,6 +378,7 @@
         const searching = typeof searchQuery!=="undefined" && !!searchQuery.trim();
         headingCount.textContent = (searching?"검색 결과 ":"전체 ")+shown+"개";
       }
+      normalizeLearningLabels();
     };
     segments.dataset.portfolioSectionsInstalled="true";
     if (!["all","practice","research","learning"].includes(activeFilter)) {
@@ -579,6 +619,7 @@
     eliminateRedundancies();
     restoreMissingLearningFromCareer();
     installSectionFilters();
+    watchLearningLabels();
     installCaseNavigation();
     installCasesPage();
     installCasesRoute();
