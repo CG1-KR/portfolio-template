@@ -855,7 +855,7 @@ body[data-neumorphism="portfolio"] #view-projects .portfolio-section[data-sectio
 /* Separate security case notebook: compact rows instead of project cards.
    The title and summary are only supplied from decrypted project data. */
 body[data-neumorphism="portfolio"] #view-cases {
-  max-width: 1200px;
+  max-width: 1120px;
   padding-bottom: 64px;
 }
 body[data-neumorphism="portfolio"] #view-cases .view-title {
