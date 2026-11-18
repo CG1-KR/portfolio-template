@@ -1062,7 +1062,7 @@ body[data-neumorphism="portfolio"] #workspace > .view[id] .detail-heading h1 {
   overflow-wrap: anywhere;
 }
 body[data-neumorphism="portfolio"] #workspace > .view[id] .detail-heading h1 { margin-top: 12px; }
-body[data-neumorphism="portfolio"] #workspace > .view[id] .detail-heading { margin-bottom: 24px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .detail-heading { margin-bottom: 24px; padding: 0; }
 body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.panel-heading, .portfolio-section-name h2, .portfolio-detail-section-heading h2, .detail-meta h2, .project-history > h2) {
   font-size: var(--portfolio-section-title-size);
   font-weight: 700;
