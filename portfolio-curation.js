@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261113-other-practice";
+  const VERSION = "20261118-format-review";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -668,12 +668,22 @@
         body.append(roleBox);
       }
       renderParagraphs(body, record[entry.key]);
+      if (!body.textContent.trim()) continue;
+      number.textContent = String(wrapper.childElementCount + 1).padStart(2, "0");
       card.append(header, body);
       wrapper.append(card);
     }
     main.replaceChildren(wrapper);
     main.classList.add("portfolio-detail-main");
     root.classList.add("portfolio-detail-view");
+    const detailCategory = root.querySelector(".detail-category > span:first-child");
+    const sectionLabels = {practice:"실무·사례",research:"개발·연구",learning:"학습",case:"취약점 정리"};
+    const sectionLabel = sectionLabels[projectSection(record)];
+    if (detailCategory && sectionLabel) detailCategory.textContent = sectionLabel;
+    root.querySelectorAll(".detail-meta dl > div").forEach(row => {
+      const value = row.querySelector("dd");
+      if (value && !value.textContent.trim()) row.remove();
+    });
     eliminateRedundancies();
   }
 

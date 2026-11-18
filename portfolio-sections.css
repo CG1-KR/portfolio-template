@@ -3,10 +3,6 @@ body[data-neumorphism="portfolio"] #view-projects .view-title,
 body[data-neumorphism="portfolio"] .portfolio-curated-host .view-title {
   margin-bottom: 32px;
 }
-body[data-neumorphism="portfolio"] #view-projects .view-title h1 {
-  font-size: clamp(27px, 3.4vw, 34px);
-  letter-spacing: -.045em;
-}
 body[data-neumorphism="portfolio"] #view-projects .project-toolbar {
   display: flex;
   align-items: center;
@@ -860,17 +856,10 @@ body[data-neumorphism="portfolio"] #view-projects .portfolio-section[data-sectio
    The title and summary are only supplied from decrypted project data. */
 body[data-neumorphism="portfolio"] #view-cases {
   max-width: 1200px;
-  padding-top: clamp(27px,3vw,39px);
   padding-bottom: 64px;
 }
 body[data-neumorphism="portfolio"] #view-cases .view-title {
   margin-bottom: 27px;
-}
-body[data-neumorphism="portfolio"] #view-cases .view-title h1 {
-  font-size: clamp(26px,3vw,33px);
-  font-weight: 730;
-  letter-spacing: -.045em;
-  color: #283853;
 }
 body[data-neumorphism="portfolio"] .portfolio-case-list {
   display: flex;
@@ -1040,4 +1029,161 @@ body[data-neumorphism="portfolio"] #view-detail.portfolio-case-detail .detail-pa
   body[data-neumorphism="portfolio"] .portfolio-case-open {
     display: none;
   }
+}
+
+/* Shared page, section and component formats. Keep peer elements consistent. */
+body[data-neumorphism="portfolio"] #workspace > .view[id] {
+  --portfolio-page-title-size: 29px;
+  --portfolio-section-title-size: 20px;
+  --portfolio-item-title-size: 18px;
+  --portfolio-body-size: 13px;
+  --portfolio-heading-color: #263550;
+  --portfolio-body-color: #50617f;
+  padding-top: 28px;
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] > .view-title {
+  display: flex;
+  align-items: flex-start;
+  margin: 0 0 24px;
+  padding: 0;
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] > .view-title h1,
+body[data-neumorphism="portfolio"] #workspace > .view[id] .detail-heading h1 {
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: var(--portfolio-page-title-size);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -.04em;
+  color: var(--portfolio-heading-color);
+  overflow-wrap: anywhere;
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] .detail-heading h1 { margin-top: 12px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .detail-heading { margin-bottom: 24px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.panel-heading, .portfolio-section-name h2, .portfolio-detail-section-heading h2, .detail-meta h2, .project-history > h2) {
+  font-size: var(--portfolio-section-title-size);
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: -.025em;
+  color: var(--portfolio-heading-color);
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.panel-heading, .detail-meta h2) { margin: 0 0 20px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .portfolio-section-name { margin-top: 0; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .portfolio-section-heading { margin-bottom: 20px; padding: 0; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.portfolio-section-grid .project-content h2, .portfolio-case-name) {
+  font-size: var(--portfolio-item-title-size);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -.025em;
+  color: var(--portfolio-heading-color);
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] .profile-overview h2 {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.45;
+  margin: 0 0 8px;
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.timeline-row h3, .history-row h3, .skill-group h3, .experience-section-title, .portfolio-detail-subheading) {
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.6;
+  letter-spacing: -.015em;
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.profile-about, .project-summary, .portfolio-case-summary, .portfolio-detail-body, .portfolio-detail-body p, .timeline-row p, .history-row p, .history-note) {
+  font-size: var(--portfolio-body-size);
+  line-height: 1.85;
+  color: var(--portfolio-body-color);
+  overflow-wrap: anywhere;
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] .portfolio-detail-body p { margin: 0 0 16px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .portfolio-detail-body p:last-child { margin-bottom: 0; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.project-basics dt, .detail-meta dt, .profile-facts b, .portfolio-role-label) {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: #687894;
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.project-basics dd, .detail-meta dd, .profile-facts > span, .timeline-date, .timeline-org, .history-period) {
+  font-size: 12px;
+  line-height: 1.75;
+  color: var(--portfolio-body-color);
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] .project-basics > div { font-size: 12px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .project-basics dt { margin: 0; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .portfolio-role-value {
+  font-size: 13px;
+  line-height: 1.85;
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] .tags { flex-wrap: wrap; gap: 6px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .tags span {
+  font-size: 11px;
+  line-height: 1.5;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.button, .project-detail-button, .portfolio-case-open) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: 38px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-decoration: none;
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.project-detail-button, .portfolio-case-open) {
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.51);
+  background: linear-gradient(145deg, #7e90dc, #5169c4);
+  box-shadow: 5px 6px 13px rgba(107,122,186,.28), -3px -3px 11px rgba(255,255,255,.88);
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.project-detail-button, .portfolio-case-open):hover {
+  color: #fff;
+  background: linear-gradient(145deg, #687dce, #465cb3);
+  transform: translateY(-1px);
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.button, .project-detail-button, .portfolio-case-open):focus-visible {
+  outline: 2px solid #5977cd;
+  outline-offset: 3px;
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.profile-overview, .info-panel, .project-card, .portfolio-case-list, .portfolio-detail-section, .detail-meta) {
+  border-radius: 20px;
+}
+body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.info-panel, .portfolio-detail-section, .detail-meta) { padding: 24px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .profile-overview { padding: 28px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .portfolio-section-grid .project-content { padding: 24px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.profile-grid, .portfolio-section-grid) { gap: 24px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .project-grid.portfolio-grouped { gap: 32px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .portfolio-section + .portfolio-section { padding-top: 24px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .project-history { margin: 32px 0 24px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .home-actions { flex-wrap: wrap; gap: 12px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .portfolio-detail-section-heading { gap: 16px; margin-bottom: 20px; padding-bottom: 16px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .portfolio-detail-number { width: 40px; height: 40px; border-radius: 12px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .portfolio-role-overview { margin-bottom: 24px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .experience-section-title { margin: 24px 0 16px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .experience-section-title:first-child { margin-top: 0; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.history-table-head, .history-row) { padding: 16px 20px; }
+body[data-neumorphism="portfolio"] #workspace > .view[id] .history-table-head { font-size: 12px; line-height: 1.6; }
+@media (max-width: 600px) {
+  body[data-neumorphism="portfolio"] #workspace > .view[id] {
+    --portfolio-page-title-size: 26px;
+    --portfolio-section-title-size: 18px;
+    --portfolio-item-title-size: 16px;
+    padding-top: 24px;
+  }
+  body[data-neumorphism="portfolio"] #workspace > .view[id] > .view-title { margin-bottom: 20px; }
+  body[data-neumorphism="portfolio"] #workspace > .view[id] .detail-heading { margin-bottom: 20px; }
+  body[data-neumorphism="portfolio"] #workspace > .view[id] .profile-overview h2 { font-size: 22px; }
+  body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.profile-overview, .info-panel, .project-card, .portfolio-case-list, .portfolio-detail-section, .detail-meta) { border-radius: 18px; }
+  body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.profile-overview, .info-panel, .portfolio-detail-section, .detail-meta) { padding: 20px; }
+  body[data-neumorphism="portfolio"] #workspace > .view[id] .portfolio-section-grid .project-content { padding: 20px; }
+  body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.profile-grid, .portfolio-section-grid) { gap: 16px; }
+  body[data-neumorphism="portfolio"] #workspace > .view[id] .portfolio-detail-section-heading { gap: 12px; margin-bottom: 16px; }
+  body[data-neumorphism="portfolio"] #workspace > .view[id] .portfolio-detail-number { width: 36px; height: 36px; }
+  body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.history-table-head, .history-row) { padding: 16px; }
 }
