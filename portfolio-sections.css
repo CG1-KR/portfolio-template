@@ -416,8 +416,6 @@ body[data-neumorphism="portfolio"] .portfolio-compact-link:focus-visible {
 
 /* One-page project detail | all content visible, no switching tabs */
 body[data-neumorphism="portfolio"] #view-detail.portfolio-detail-view {
-  max-width: 1160px;
-  padding-top: clamp(22px, 3vw, 40px);
   padding-bottom: 64px;
 }
 body[data-neumorphism="portfolio"] #view-detail.portfolio-detail-view .back-link {
@@ -855,7 +853,6 @@ body[data-neumorphism="portfolio"] #view-projects .portfolio-section[data-sectio
 /* Separate security case notebook: compact rows instead of project cards.
    The title and summary are only supplied from decrypted project data. */
 body[data-neumorphism="portfolio"] #view-cases {
-  max-width: 1120px;
   padding-bottom: 64px;
 }
 body[data-neumorphism="portfolio"] #view-cases .view-title {
@@ -1040,6 +1037,7 @@ body[data-neumorphism="portfolio"] #workspace > .view[id] {
   --portfolio-body-size: 13px;
   --portfolio-heading-color: #263550;
   --portfolio-body-color: #50617f;
+  max-width: 1120px;
   padding-top: 28px;
   padding-inline: 38px;
 }

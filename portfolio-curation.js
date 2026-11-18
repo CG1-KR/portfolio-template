@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261118-aligned-page-width";
+  const VERSION = "20261118-shared-page-width";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
