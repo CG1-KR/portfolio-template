@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261118-shared-page-width";
+  const VERSION = "20261119-sidebar-overview";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -596,7 +596,7 @@
         renderCasesPage();
         const crumb=document.getElementById("current-screen");
         if(crumb)crumb.textContent="취약점 정리";
-        document.title="취약점 정리 · Portfolio";
+        document.title="취약점 정리 · 포트폴리오";
       }else{
         fixCaseDetailNavigation();
       }
