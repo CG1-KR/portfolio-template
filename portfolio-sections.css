@@ -1032,6 +1032,7 @@ body[data-neumorphism="portfolio"] #view-detail.portfolio-case-detail .detail-pa
 }
 
 /* Shared page, section and component formats. Keep peer elements consistent. */
+@media screen {
 body[data-neumorphism="portfolio"] #workspace > .view[id] {
   --portfolio-page-title-size: 29px;
   --portfolio-section-title-size: 20px;
@@ -1040,6 +1041,7 @@ body[data-neumorphism="portfolio"] #workspace > .view[id] {
   --portfolio-heading-color: #263550;
   --portfolio-body-color: #50617f;
   padding-top: 28px;
+  padding-inline: 38px;
 }
 body[data-neumorphism="portfolio"] #workspace > .view[id] > .view-title {
   display: flex;
@@ -1175,6 +1177,7 @@ body[data-neumorphism="portfolio"] #workspace > .view[id] .history-table-head { 
     --portfolio-section-title-size: 18px;
     --portfolio-item-title-size: 16px;
     padding-top: 24px;
+    padding-inline: 20px;
   }
   body[data-neumorphism="portfolio"] #workspace > .view[id] > .view-title { margin-bottom: 20px; }
   body[data-neumorphism="portfolio"] #workspace > .view[id] .detail-heading { margin-bottom: 20px; }
@@ -1186,4 +1189,6 @@ body[data-neumorphism="portfolio"] #workspace > .view[id] .history-table-head { 
   body[data-neumorphism="portfolio"] #workspace > .view[id] .portfolio-detail-section-heading { gap: 12px; margin-bottom: 16px; }
   body[data-neumorphism="portfolio"] #workspace > .view[id] .portfolio-detail-number { width: 36px; height: 36px; }
   body[data-neumorphism="portfolio"] #workspace > .view[id] :is(.history-table-head, .history-row) { padding: 16px; }
+}
+
 }
