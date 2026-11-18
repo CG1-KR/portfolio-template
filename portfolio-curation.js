@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261119-sidebar-overview";
+  const VERSION = "20261119-content-first";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
