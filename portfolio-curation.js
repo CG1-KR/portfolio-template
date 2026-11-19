@@ -947,6 +947,132 @@ body[data-career-layout="document"] :is(.app-nav a,.career-entry-list a):focus-v
   body[data-career-layout="document"] .app-shell {display:block;}
   body[data-career-layout="document"] .app-sidebar {display:none!important;}
 }
+
+/* Shared layout, type and control values for the unlocked portfolio. */
+body[data-career-layout="document"] {
+  --career-space-1: .25rem;
+  --career-space-2: .5rem;
+  --career-space-3: .75rem;
+  --career-space-4: 1rem;
+  --career-space-6: 1.5rem;
+  --career-space-8: 2rem;
+  --career-measure: 68ch;
+  --career-control: 2.75rem;
+  --career-radius: .5rem;
+  --career-selected: #dce9f8;
+  --career-surface: #f5f8fc;
+  --career-focus: #285882;
+  --career-text: 1rem;
+  --career-section-title: 1.25rem;
+}
+body[data-career-layout="document"] .app-shell {
+  grid-template-columns: clamp(222px, 20vw, 256px) minmax(0, 1fr);
+}
+body[data-career-layout="document"] .app-sidebar {
+  padding: var(--career-space-8) var(--career-space-6);
+}
+body[data-career-layout="document"] .career-profile-info {
+  gap: var(--career-space-1);
+  padding-block-end: var(--career-space-6);
+  margin: var(--career-space-3) 0 var(--career-space-4);
+  border-bottom: 1px solid var(--career-line);
+}
+body[data-career-layout="document"] .app-nav {gap: var(--career-space-1);}
+body[data-career-layout="document"] .app-nav .nav-link {
+  min-height: var(--career-control);
+  padding: var(--career-space-2) var(--career-space-3);
+  position: relative;
+  border-radius: var(--career-radius);
+  font-size: .875rem;
+}
+body[data-career-layout="document"] .app-nav .nav-link[aria-current="page"] {
+  background: var(--career-selected);
+  color: var(--career-accent);
+  font-weight: 700;
+}
+body[data-career-layout="document"] .app-nav .nav-link[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  inset-block: var(--career-space-2);
+  inset-inline-start: 0;
+  width: 3px;
+  border-radius: 3px;
+  background: currentColor;
+}
+body[data-career-layout="document"] #workspace > .view[id] {
+  --portfolio-body-size: var(--career-text);
+  padding-block-start: var(--career-space-8);
+}
+body[data-career-layout="document"] #workspace > .view[id] :is(.profile-about,.project-summary,.portfolio-case-summary,.portfolio-detail-body p) {
+  max-width: var(--career-measure);
+  font-size: var(--career-text);
+  line-height: 1.8;
+}
+body[data-career-layout="document"] #workspace > .view[id] .profile-overview {
+  padding-block: 0 var(--career-space-4);
+}
+body[data-career-layout="document"] #workspace > .view[id] .profile-overview h2 {
+  font-size: clamp(1.75rem, 3vw, 2.375rem);
+  line-height: 1.3;
+  letter-spacing: -.045em;
+}
+body[data-career-layout="document"] #workspace > .view[id] .profile-facts {
+  gap: var(--career-space-4);
+  padding: var(--career-space-4);
+  background: var(--career-surface);
+  border: 0;
+  border-radius: var(--career-radius);
+}
+body[data-career-layout="document"] .career-entry-list {
+  gap: var(--career-space-6);
+  margin-block: var(--career-space-6);
+}
+body[data-career-layout="document"] .career-entry-list section {padding-block: var(--career-space-4);}
+body[data-career-layout="document"] .career-entry-list h2 {font-size: var(--career-section-title);}
+body[data-career-layout="document"] .career-entry-list a {min-height: var(--career-control); align-content: center;}
+body[data-career-layout="document"] #workspace > .view[id] .portfolio-section-grid .project-content {
+  padding-block: var(--career-space-6);
+}
+body[data-career-layout="document"] #workspace > .view[id] :is(.project-detail-button,.portfolio-case-open,.home-actions .button,.segments .filter) {
+  min-height: var(--career-control);
+  border-radius: var(--career-radius);
+}
+body[data-career-layout="document"] #workspace > .view[id] .segments {flex-wrap: wrap;}
+body[data-career-layout="document"] #workspace > .view[id] .segments .filter {
+  background: var(--career-surface);
+  border: 1px solid var(--career-line);
+  box-shadow: none;
+}
+body[data-career-layout="document"] #workspace > .view[id] .segments .filter[aria-pressed="true"] {
+  background: var(--career-selected);
+  color: var(--career-accent);
+  font-weight: 700;
+}
+body[data-career-layout="document"] :is(.app-sidebar,.workspace) :is(a,button,input):focus-visible {
+  outline: 2px solid var(--career-focus);
+  outline-offset: 3px;
+}
+@media (max-width: 800px) {
+  body[data-career-layout="document"] .app-shell {grid-template-columns: minmax(0, 1fr);}
+  body[data-career-layout="document"] .app-sidebar {
+    padding: var(--career-space-4) var(--career-space-6);
+  }
+  body[data-career-layout="document"] .career-profile-info {
+    padding-block-end: var(--career-space-2);
+    margin-block-end: var(--career-space-2);
+  }
+  body[data-career-layout="document"] .app-sidebar .app-nav {gap: var(--career-space-1);}
+  body[data-career-layout="document"] #workspace > .view[id] {
+    padding-block: var(--career-space-6);
+    padding-inline: var(--career-space-6);
+  }
+}
+@media (max-width: 480px) {
+  body[data-career-layout="document"] #workspace > .view[id] .profile-facts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--career-space-2);
+  }
+}
 `;
     document.head.append(layoutStyle);
     installCareerLayout();
