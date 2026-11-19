@@ -1026,10 +1026,13 @@ body[data-career-layout="document"] #workspace > .view[id] :is(.profile-about,.p
 body[data-career-layout="document"] #workspace > .view[id] .profile-overview {
   padding-block: 0 var(--career-space-4);
 }
-body[data-career-layout="document"] #workspace > .view[id] .profile-overview h2 {
+body[data-career-layout="document"] #workspace > .view[id] :is(.profile-overview h2, #projects-title, #cases-title) {
+  font-family: inherit;
   font-size: clamp(1.75rem, 3vw, 2.375rem);
+  font-weight: 700;
   line-height: 1.3;
   letter-spacing: -.045em;
+  color: var(--career-ink);
 }
 body[data-career-layout="document"] #workspace > .view[id] .profile-facts {
   gap: var(--career-space-4);
