@@ -313,6 +313,12 @@
       // Do not allow legacy delegated filter handlers to react to our buttons.
       if (event && typeof event.stopPropagation === "function") event.stopPropagation();
       activeFilter = group.id;
+      if (document.body.dataset.careerLayout === "document") {
+        const target = group.id === "practice" ? "#/projects/practice" :
+          group.id === "research" ? "#/projects/tools" : "#/projects";
+        if (location.hash !== target) history.replaceState(null, "", target);
+        renderRoute(false);
+      }
       renderProjects();
     });
     return button;
@@ -687,6 +693,141 @@
     eliminateRedundancies();
   }
 
+
+  function installCareerLayout() {
+    const nav = document.querySelector(".app-nav");
+    const sidebar = document.querySelector(".app-sidebar");
+    const host = document.getElementById("profile-content");
+    const source = document.getElementById("portfolio-data");
+    if (!nav || !sidebar || !host || !source || !route.__portfolioCasesRoute) return;
+
+    const profile = JSON.parse(source.textContent).profile;
+    const brand = sidebar.querySelector(".app-brand strong");
+    if (brand) brand.textContent = profile.name;
+    const identity = document.createElement("p");
+    identity.className = "career-profile-role";
+    identity.textContent = profile.role;
+    nav.before(identity);
+    const duration = document.createElement("p");
+    duration.className = "career-profile-period";
+    duration.textContent = profile.location;
+    nav.before(duration);
+
+    const practiceHash = "#/projects/practice";
+    const toolsHash = "#/projects/tools";
+    const careerHash = "#/profile/details";
+    const links = [
+      [practiceHash, "실무 프로젝트", "projects"],
+      [CASES_ROUTE, "진단 사례", "cases"],
+      [toolsHash, "도구 제작", "tools"],
+      [careerHash, "경력·기술", "career"]
+    ];
+    function createLink(href, label, key) {
+      const link = document.createElement("a");
+      link.href = href;
+      link.textContent = label;
+      if (key) link.dataset.nav = key;
+      return link;
+    }
+
+    const projectLink = nav.querySelector('[data-nav="projects"]');
+    if (!projectLink) return;
+    const projectCount = projectLink.querySelector(".nav-count");
+    projectLink.href = practiceHash;
+    projectLink.textContent = "실무 프로젝트";
+    if (projectCount) projectLink.append(projectCount);
+    const profileLink = nav.querySelector('[data-nav="profile"] span');
+    if (profileLink) profileLink.textContent = "소개";
+    const caseLink = nav.querySelector('[data-nav="cases"]');
+    if (caseLink) {
+      caseLink.textContent = "진단 사례";
+      projectLink.after(caseLink);
+    }
+    for (const [href, label, key] of links.slice(2)) {
+      const link = createLink(href, label, key);
+      link.className = "nav-link";
+      nav.append(link);
+    }
+
+    function addEntries() {
+      if (host.querySelector(".career-entry-list")) return;
+      const container = document.createElement("div");
+      container.className = "career-entry-list";
+      for (const [title, entries] of [
+        ["보안 진단·컨설팅", links.slice(0, 2)],
+        ["도구 제작·검증", links.slice(2, 3)]
+      ]) {
+        const section = document.createElement("section");
+        const heading = document.createElement("h2");
+        heading.textContent = title;
+        const list = document.createElement("div");
+        for (const [href, label] of entries) list.append(createLink(href, label));
+        section.append(heading, list);
+        container.append(section);
+      }
+      const overview = host.querySelector(".profile-overview");
+      if (overview) overview.after(container);
+    }
+    addEntries();
+    const previousProfile = renderProfile;
+    renderProfile = function () {
+      previousProfile();
+      addEntries();
+    };
+
+    const previousRoute = route;
+    route = function () {
+      if (location.hash === practiceHash || location.hash === toolsHash) return {view: "projects"};
+      return previousRoute();
+    };
+    route.__portfolioCasesRoute = true;
+    const previousRender = renderRoute;
+    let lastHash;
+    renderRoute = function (focus) {
+      const hash = location.hash;
+      const directFilter = hash === practiceHash ? "practice" : hash === toolsHash ? "research" : null;
+      const previousHash = lastHash;
+      lastHash = hash;
+      if (hash !== previousHash && directFilter) {
+        activeFilter = directFilter;
+        searchQuery = "";
+        const search = document.getElementById("project-search");
+        if (search) search.value = "";
+        renderProjects();
+      }
+      previousRender(focus);
+
+      const detail = hash.match(/^#\/project\/(\d+)$/);
+      const toolDetail = detail && projectSection(sourceProjects()[Number(detail[1]) - 1]) === "research";
+      const section = hash === toolsHash || toolDetail ? "tools" : hash === careerHash ? "career" : null;
+      if (toolDetail) {
+        const back = document.querySelector("#view-detail .back-link");
+        if (back) back.href = toolsHash;
+      }
+      if (section) {
+        nav.querySelectorAll("[data-nav]").forEach(link => {
+          if (link.dataset.nav === section) link.setAttribute("aria-current", "page");
+          else link.removeAttribute("aria-current");
+        });
+      }
+      const title = hash === toolsHash ? "도구 제작" : hash === practiceHash ? "실무 프로젝트" :
+        hash === careerHash ? "경력·기술" : hash === CASES_ROUTE ? "진단 사례" : null;
+      if (title) {
+        const crumb = document.getElementById("current-screen");
+        if (crumb) crumb.textContent = title;
+        if (directFilter || hash === "#/projects") document.getElementById("projects-title").textContent = title;
+        document.title = title + " · " + profile.name;
+      }
+      if (hash === "#/projects") document.getElementById("projects-title").textContent = "프로젝트";
+      if (directFilter && hash !== previousHash && focus) {
+        document.getElementById("workspace").scrollTop = 0;
+        document.getElementById("projects-title")?.focus({preventScroll: true});
+      }
+    };
+    document.body.dataset.careerLayout = "document";
+    renderRoute(false);
+  }
+
   function enableUnlockedView() {
     if (!document.body || document.body.dataset.neumorphism !== "portfolio") return;
     eliminateRedundancies();
@@ -696,6 +837,88 @@
     installCaseNavigation();
     installCasesPage();
     installCasesRoute();
+    const layoutStyle = document.createElement("style");
+    layoutStyle.textContent = `
+body[data-career-layout="document"] {
+  --career-ink: #213047;
+  --career-muted: #506176;
+  --career-line: #dde5ee;
+  --career-accent: #285882;
+  background: #fff;
+}
+body[data-career-layout="document"] .app-shell {
+  grid-template-columns: 222px minmax(0, 1fr);
+  gap: 0; padding: 0; background: #fff;
+}
+body[data-career-layout="document"] :is(.app-sidebar,.main-container,.app-topbar,.workspace) {
+  border-radius: 0; box-shadow: none; background: #fff;
+}
+body[data-career-layout="document"] .app-sidebar {
+  background: #edf2f8; border: 0; border-right: 1px solid var(--career-line);
+  padding: 37px 23px; color: var(--career-ink); gap: 0;
+}
+body[data-career-layout="document"] .app-brand {
+  padding: 0; background: none; box-shadow: none; border: 0; color: var(--career-ink);
+}
+body[data-career-layout="document"] .app-brand strong {font-size: 28px; letter-spacing: -.05em;}
+body[data-career-layout="document"] .career-profile-role {font-size: 13px; color: var(--career-accent); margin: 10px 0 0; line-height: 1.65;}
+body[data-career-layout="document"] .career-profile-period {font-size: 12px; color: var(--career-muted); margin: 14px 0 22px; line-height: 1.6;}
+body[data-career-layout="document"] .app-nav {gap: 5px;}
+body[data-career-layout="document"] .app-nav .nav-link {
+  padding: 8px 11px; min-height: 40px; justify-content: flex-start; color: var(--career-muted);
+  border: 0; border-radius: 5px; box-shadow: none; background: transparent;
+}
+body[data-career-layout="document"] .app-nav .nav-link svg,
+body[data-career-layout="document"] .app-nav .nav-count {display:none;}
+body[data-career-layout="document"] .app-nav .nav-link:is(:hover,[aria-current]) {background: #dfeaf6; color: var(--career-accent);}
+body[data-career-layout="document"] .app-topbar {border: 0; border-bottom: 1px solid var(--career-line);}
+body[data-career-layout="document"] #workspace > .view[id] {
+  max-width: 1050px; padding-inline: clamp(25px, 5vw, 65px);
+  --portfolio-body-size: 15px; --portfolio-body-color: var(--career-ink);
+}
+body[data-career-layout="document"] #workspace > :is(#view-projects,#view-cases) > .view-title {
+  position: static; width: auto; height: auto; margin: 0 0 22px; overflow: visible; clip: auto; clip-path: none; white-space: normal;
+}
+body[data-career-layout="document"] #workspace > .view[id] :is(.profile-overview,.info-panel,.project-card,.portfolio-case-list,.portfolio-detail-section,.detail-meta,.history-table) {
+  border: 0; border-top: 1px solid var(--career-line); border-radius: 0; background: #fff; box-shadow: none;
+}
+body[data-career-layout="document"] #workspace > .view[id] :is(.profile-overview,.info-panel,.portfolio-detail-section,.detail-meta) {padding: 21px 0;}
+body[data-career-layout="document"] #workspace > .view[id] .profile-overview {border-top: 0;}
+body[data-career-layout="document"] #workspace > .view[id] .profile-about {max-width: 72ch; line-height: 1.9;}
+body[data-career-layout="document"] #workspace > .view[id] .profile-about,
+body[data-career-layout="document"] #workspace > .view[id] .project-summary {font-size: 15px;}
+body[data-career-layout="document"] #view-projects .portfolio-section .portfolio-section-grid {grid-template-columns: minmax(0, 1fr); gap: 0;}
+body[data-career-layout="document"] #workspace > .view[id] .portfolio-section-grid .project-content {padding: 19px 0;}
+body[data-career-layout="document"] #workspace > .view[id] :is(.project-detail-button,.portfolio-case-open,.home-actions .button) {
+  border: 1px solid var(--career-line); border-radius: 5px; background: #f1f5fa;
+  color: var(--career-accent); box-shadow: none; transform: none;
+}
+body[data-career-layout="document"] #workspace > .view[id] :is(.project-detail-button,.portfolio-case-open,.home-actions .button):hover {background: #e2ecf7;}
+body[data-career-layout="document"] .career-entry-list {display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin: 24px 0;}
+body[data-career-layout="document"] .career-entry-list section {border-top: 2px solid var(--career-accent); padding: 15px 0;}
+body[data-career-layout="document"] .career-entry-list section + section {border-color: var(--career-line);}
+body[data-career-layout="document"] .career-entry-list h2 {font-size: 17px; margin: 0 0 10px; color: var(--career-ink);}
+body[data-career-layout="document"] .career-entry-list a {display: inline-block; padding: 4px 0; margin-right: 16px; font-size: 13px; color: var(--career-accent); text-decoration: underline; text-underline-offset: 4px;}
+body[data-career-layout="document"] :is(.app-nav a,.career-entry-list a):focus-visible {outline: 2px solid var(--career-accent); outline-offset: 3px;}
+@media (max-width: 800px) {
+  body[data-career-layout="document"] .app-shell {grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr);}
+  body[data-career-layout="document"] .app-sidebar {display: block; padding: 17px 21px; border: 0; border-bottom: 1px solid var(--career-line);}
+  body[data-career-layout="document"] .app-brand strong {font-size: 23px;}
+  body[data-career-layout="document"] .career-profile-role {margin-top: 5px;}
+  body[data-career-layout="document"] .career-profile-period {display: none;}
+  body[data-career-layout="document"] .app-sidebar .app-nav {display: flex; flex-wrap: wrap; margin-top: 8px; gap: 3px 5px;}
+  body[data-career-layout="document"] nav.bottom-nav {display: none;}
+}
+@media (max-width: 480px) {
+  body[data-career-layout="document"] .career-entry-list {grid-template-columns: minmax(0, 1fr); gap: 10px;}
+}
+@media print {
+  body[data-career-layout="document"] .app-shell {display:block;}
+  body[data-career-layout="document"] .app-sidebar {display:none!important;}
+}
+`;
+    document.head.append(layoutStyle);
+    installCareerLayout();
     renderOnePageDetail();
     fixCaseDetailNavigation();
     const detailRoot = document.getElementById("view-detail");
