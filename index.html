@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="staticrypt-html">
+<html class="staticrypt-html" lang="ko">
     <head>
 <meta name="robots" content="noindex, nofollow, noarchive">
         <meta charset="utf-8" />
@@ -14,166 +14,117 @@
         <meta http-equiv="pragma" content="no-cache" />
 
         <style>
-            .staticrypt-hr {
-                margin-top: 20px;
-                margin-bottom: 20px;
-                border: 0;
-                border-top: 1px solid #eee;
+            :root {
+                color-scheme: light;
+                --gate-ink: #213047;
+                --gate-muted: #506176;
+                --gate-accent: #285882;
+                --gate-line: #dde5ee;
+                --gate-side: #edf2f8;
+                font-family: "Pretendard Variable", Pretendard, "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
             }
-
+            *, *::before, *::after { box-sizing: border-box; }
+            body.staticrypt-body { margin: 0; color: var(--gate-ink); background: #fff; }
+            .hidden { display: none !important; }
             .staticrypt-page {
-                width: 360px;
-                padding: 8% 0 0;
-                margin: auto;
-                box-sizing: border-box;
+                display: grid;
+                grid-template-columns: 222px minmax(0, 1fr);
+                min-height: 100vh;
+                min-height: 100svh;
             }
-
-            .staticrypt-form {
-                position: relative;
-                z-index: 1;
-                background: #ffffff;
-                max-width: 360px;
-                margin: 0 auto 100px;
-                padding: 45px;
-                text-align: center;
-                box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+            .gate-sidebar {
+                padding: 37px 23px;
+                background: var(--gate-side);
+                border-right: 1px solid var(--gate-line);
             }
-
-            .staticrypt-form input[type="password"],
-            input[type="text"] {
-                background: inherit;
-                border: 0;
-                box-sizing: border-box; /* This ensures padding is included in the total width */
-                font-size: 14px;
-                outline: 0;
-                padding: 15px 30px 15px 15px; /* Adjust the padding to ensure there is space for the icon */
-                width: 100%;
+            .gate-sidebar strong { display: block; font-size: 25px; line-height: 1.45; letter-spacing: -.05em; }
+            .gate-sidebar p { margin: 9px 0 0; color: var(--gate-accent); font-size: 13px; line-height: 1.65; }
+            .staticrypt-form { min-width: 0; }
+            .gate-breadcrumb {
+                margin: 0;
+                padding: 20px clamp(24px, 5vw, 65px);
+                color: var(--gate-muted);
+                border-bottom: 1px solid var(--gate-line);
+                font-size: 13px;
             }
-
+            .gate-entry { width: min(100%, 550px); padding: clamp(36px, 7vw, 84px) clamp(24px, 5vw, 65px); }
+            .staticrypt-title {
+                margin: 0;
+                font-size: clamp(27px, 4vw, 36px);
+                line-height: 1.35;
+                letter-spacing: -.045em;
+            }
+            .staticrypt-instructions p { margin: 12px 0 26px; color: var(--gate-muted); font-size: 15px; line-height: 1.75; }
+            .gate-label { display: inline-block; margin-bottom: 7px; font-size: 13px; font-weight: 600; }
             .staticrypt-password-container {
                 position: relative;
-                outline: 0;
-                background: #f2f2f2;
-                width: 100%;
-                border: 0;
-                margin: 0 0 15px;
-                box-sizing: border-box;
+                border: 1px solid #a9b9cb;
+                border-radius: 6px;
+                background: #fff;
             }
-
+            .staticrypt-password-container:focus-within { border-color: var(--gate-accent); }
+            #staticrypt-password {
+                display: block;
+                width: 100%;
+                min-height: 48px;
+                padding: 11px 56px 11px 13px;
+                color: var(--gate-ink);
+                font: inherit;
+                font-size: 16px;
+                border: 0;
+                border-radius: inherit;
+                background: transparent;
+            }
+            #staticrypt-password::placeholder { color: var(--gate-muted); }
             .staticrypt-toggle-password-visibility {
-                cursor: pointer;
-                height: 20px;
-                opacity: 60%;
-                padding: 13px;
                 position: absolute;
-                right: 0;
                 top: 50%;
+                right: 3px;
                 transform: translateY(-50%);
-                width: 20px;
-            }
-
-            .staticrypt-form .staticrypt-decrypt-button {
-                text-transform: uppercase;
-                outline: 0;
-                background: #4CAF50;
-                width: 100%;
-                border: 0;
-                padding: 15px;
-                color: #ffffff;
-                font-size: 14px;
+                width: 44px;
+                height: 44px;
+                padding: 12px;
+                border-radius: 5px;
+                opacity: .68;
                 cursor: pointer;
             }
-
-            .staticrypt-form .staticrypt-decrypt-button:hover,
-            .staticrypt-form .staticrypt-decrypt-button:active,
-            .staticrypt-form .staticrypt-decrypt-button:focus {
-                background: #4CAF50;
-                filter: brightness(92%);
+            .staticrypt-toggle-password-visibility:hover { background: var(--gate-side); opacity: 1; }
+            .staticrypt-decrypt-button {
+                min-height: 44px;
+                margin-top: 16px;
+                padding: 10px 18px;
+                border: 1px solid var(--gate-accent);
+                border-radius: 5px;
+                background: var(--gate-accent);
+                color: #fff;
+                font: inherit;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
             }
-
-            .staticrypt-html {
-                height: 100%;
-            }
-
-            .staticrypt-body {
-                height: 100%;
-                margin: 0;
-            }
-
-            .staticrypt-content {
-                height: 100%;
-                margin-bottom: 1em;
-                background: #76B852;
-                font-family: "Arial", sans-serif;
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
-            }
-
-            .staticrypt-instructions {
-                margin-top: -1em;
-                margin-bottom: 1em;
-            }
-
-            .staticrypt-title {
-                font-size: 1.5em;
-            }
-
-            label.staticrypt-remember {
-                display: flex;
-                align-items: center;
-                margin-bottom: 1em;
-            }
-
-            .staticrypt-remember input[type="checkbox"] {
-                transform: scale(1.5);
-                margin-right: 1em;
-            }
-
-            .hidden {
-                display: none !important;
-            }
-
-            .staticrypt-spinner-container {
-                height: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
+            .staticrypt-decrypt-button:hover { background: #204768; }
+            #staticrypt-password:focus-visible,
+            .staticrypt-decrypt-button:focus-visible { outline: 2px solid var(--gate-accent); outline-offset: 3px; }
+            .staticrypt-remember { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+            .staticrypt-spinner-container { min-height: 100vh; display: grid; place-items: center; }
             .staticrypt-spinner {
-                display: inline-block;
-                width: 2rem;
-                height: 2rem;
-                vertical-align: text-bottom;
-                border: 0.25em solid gray;
-                border-right-color: transparent;
+                width: 28px;
+                height: 28px;
+                border: 3px solid var(--gate-line);
+                border-top-color: var(--gate-accent);
                 border-radius: 50%;
-                -webkit-animation: spinner-border 0.75s linear infinite;
-                animation: spinner-border 0.75s linear infinite;
-                animation-duration: 0.75s;
-                animation-timing-function: linear;
-                animation-delay: 0s;
-                animation-iteration-count: infinite;
-                animation-direction: normal;
-                animation-fill-mode: none;
-                animation-play-state: running;
-                animation-name: spinner-border;
+                animation: gate-spin 0.75s linear infinite;
             }
-
-            @keyframes spinner-border {
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
-
-            @media screen and (-webkit-min-device-pixel-ratio: 0) {
-                .staticrypt-form input[type="password"],
-                input[type="text"] {
-                    font-size: 16px;
-                }
+            @keyframes gate-spin { to { transform: rotate(360deg); } }
+            @media (prefers-reduced-motion: reduce) { .staticrypt-spinner { animation: none; } }
+            @media (max-width: 800px) {
+                .staticrypt-page { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+                .gate-sidebar { padding: 17px 23px; border-right: 0; border-bottom: 1px solid var(--gate-line); }
+                .gate-sidebar strong { font-size: 21px; }
+                .gate-sidebar p { margin-top: 4px; }
+                .gate-breadcrumb { padding-block: 14px; }
             }
         </style>
-        <link rel="stylesheet" href="./neumorphism.css?v=20261113" />
         <script src="./portfolio-curation.js?v=20261119-content-first" defer></script>
     </head>
 
@@ -184,33 +135,24 @@
 
         <div id="staticrypt_content" class="staticrypt-content hidden">
             <div class="staticrypt-page">
-                <div class="staticrypt-form">
-                    <div class="neu-login-icon" aria-hidden="true">
-                        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 19a6 6 0 0 1 6-6h12l6 7h16a6 6 0 0 1 6 6v22a6 6 0 0 1-6 6H15a6 6 0 0 1-6-6V19Z"/>
-                            <path d="M9 27h46"/>
-                        </svg>
-                    </div>
-                    <div class="staticrypt-instructions">
-                        <p class="staticrypt-title">포트폴리오 열람</p>
-                        <p>전달받은 열람 비밀번호를 입력해 주세요.</p>
-                    </div>
-
-                    <hr class="staticrypt-hr" />
-
-                    <form id="staticrypt-form" action="#" method="post">
+                <aside class="gate-sidebar" aria-label="포트폴리오 안내">
+                    <strong>포트폴리오</strong>
+                    <p>보안 진단·컨설팅<br />AI 활용 진단 도구 제작</p>
+                </aside>
+                <main class="staticrypt-form">
+                    <p class="gate-breadcrumb">포트폴리오 / 열람</p>
+                    <div class="gate-entry">
+                        <div class="staticrypt-instructions">
+                            <h1 class="staticrypt-title">포트폴리오 열람</h1>
+                            <p>전달받은 열람 비밀번호를 입력해 주세요.</p>
+                        </div>
+                        <form id="staticrypt-form" action="#" method="post">
+                            <label class="gate-label" for="staticrypt-password">열람 비밀번호</label>
                         <div class="staticrypt-password-container">
-                            <span class="neu-input-lock" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="5" y="10" width="14" height="11" rx="3"/>
-                                    <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
-                                </svg>
-                            </span>
                             <input
                                 id="staticrypt-password"
                                 type="password"
                                 name="password"
-                                aria-label="열람 비밀번호"
                                 placeholder="열람 비밀번호"
                                 autofocus
                             />
@@ -229,8 +171,9 @@
                         </label>
 
                         <input type="submit" class="staticrypt-decrypt-button" value="포트폴리오 보기" />
-                    </form>
-                </div>
+                        </form>
+                    </div>
+                </main>
             </div>
         </div>
 
