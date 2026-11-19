@@ -6,7 +6,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "20261119-heading-scale";
+  const VERSION = "20261119-heading-layout";
   const LABELS = [
     { key: "problem", label: "개요 및 역할" },
     { key: "approach", label: "프로젝트 내용" },
@@ -724,8 +724,11 @@
     function updateProfilePresentation() {
       const overview = host.querySelector(".profile-overview");
       if (!overview) return;
-      const title = overview.querySelector("h2");
-      if (title) title.textContent = "자기소개";
+      const heading = document.getElementById("profile-title");
+      if (heading) {
+        heading.textContent = "자기소개";
+        overview.querySelector("h2")?.remove();
+      }
       const contact = overview.querySelector(".profile-contact");
       if (contact) {
         const previousContact = profileInfo.querySelector(".profile-contact");
@@ -923,8 +926,21 @@ body[data-career-layout="document"] #workspace > .view[id] {
   max-width: 1050px; padding-inline: clamp(25px, 5vw, 65px);
   --portfolio-body-size: 15px; --portfolio-body-color: var(--career-ink);
 }
-body[data-career-layout="document"] #workspace > :is(#view-projects,#view-cases) > .view-title {
-  position: static; width: auto; height: auto; margin: 0 0 22px; overflow: visible; clip: auto; clip-path: none; white-space: normal;
+body[data-career-layout="document"] #workspace > :is(#view-profile, #view-projects, #view-cases) > .view-title {
+  display: block;
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0 0 var(--career-space-6);
+  padding: 0;
+  border: 0;
+  overflow: visible;
+  clip: auto;
+  clip-path: none;
+  white-space: normal;
+}
+body[data-career-layout="document"] #workspace > :is(#view-profile, #view-projects, #view-cases) > .view-title + * {
+  margin-block-start: 0;
 }
 body[data-career-layout="document"] #workspace > .view[id] :is(.profile-overview,.info-panel,.project-card,.portfolio-case-list,.portfolio-detail-section,.detail-meta,.history-table) {
   border: 0; border-top: 1px solid var(--career-line); border-radius: 0; background: #fff; box-shadow: none;
@@ -1026,7 +1042,9 @@ body[data-career-layout="document"] #workspace > .view[id] :is(.profile-about,.p
 body[data-career-layout="document"] #workspace > .view[id] .profile-overview {
   padding-block: 0 var(--career-space-4);
 }
-body[data-career-layout="document"] #workspace > .view[id] :is(.profile-overview h2, #projects-title, #cases-title) {
+body[data-career-layout="document"] #workspace > .view[id] :is(#profile-title, #projects-title, #cases-title) {
+  margin: 0;
+  padding: 0;
   font-family: inherit;
   font-size: clamp(1.75rem, 3vw, 2.375rem);
   font-weight: 700;
