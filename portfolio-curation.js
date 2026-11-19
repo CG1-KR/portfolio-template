@@ -704,14 +704,30 @@
     const profile = JSON.parse(source.textContent).profile;
     const brand = sidebar.querySelector(".app-brand strong");
     if (brand) brand.textContent = profile.name;
-    const identity = document.createElement("p");
-    identity.className = "career-profile-role";
-    identity.textContent = profile.role;
-    nav.before(identity);
-    const duration = document.createElement("p");
-    duration.className = "career-profile-period";
-    duration.textContent = profile.location;
-    nav.before(duration);
+    const profileInfo = document.createElement("div");
+    profileInfo.className = "career-profile-info";
+    const work = document.createElement("p");
+    work.textContent = "업무 : 취약점 진단";
+    const updated = document.createElement("p");
+    const updateDate = document.createElement("time");
+    updateDate.dateTime = "2026-11-19";
+    updateDate.textContent = "2026.11.19";
+    updated.append("Update : ", updateDate);
+    profileInfo.append(work, updated);
+    nav.before(profileInfo);
+
+    function updateProfilePresentation() {
+      const overview = host.querySelector(".profile-overview");
+      if (!overview) return;
+      const title = overview.querySelector("h2");
+      if (title) title.textContent = "자기소개";
+      const contact = overview.querySelector(".profile-contact");
+      if (contact) {
+        const previousContact = profileInfo.querySelector(".profile-contact");
+        if (previousContact) previousContact.remove();
+        profileInfo.insertBefore(contact, updated);
+      }
+    }
 
     const practiceHash = "#/projects/practice";
     const toolsHash = "#/projects/tools";
@@ -768,10 +784,12 @@
       const overview = host.querySelector(".profile-overview");
       if (overview) overview.after(container);
     }
+    updateProfilePresentation();
     addEntries();
     const previousProfile = renderProfile;
     renderProfile = function () {
       previousProfile();
+      updateProfilePresentation();
       addEntries();
     };
 
@@ -861,8 +879,22 @@ body[data-career-layout="document"] .app-brand {
   padding: 0; background: none; box-shadow: none; border: 0; color: var(--career-ink);
 }
 body[data-career-layout="document"] .app-brand strong {font-size: 28px; letter-spacing: -.05em;}
-body[data-career-layout="document"] .career-profile-role {font-size: 13px; color: var(--career-accent); margin: 10px 0 0; line-height: 1.65;}
-body[data-career-layout="document"] .career-profile-period {font-size: 12px; color: var(--career-muted); margin: 14px 0 22px; line-height: 1.6;}
+body[data-career-layout="document"] .career-profile-info {
+  display: grid;
+  gap: 5px;
+  margin: 12px 0 22px;
+  color: var(--career-muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+body[data-career-layout="document"] .career-profile-info p {margin: 0;}
+body[data-career-layout="document"] .career-profile-info .profile-contact {
+  display: grid; gap: 5px; margin: 0; font: inherit;
+}
+body[data-career-layout="document"] .career-profile-info .profile-contact p {
+  display: block; overflow-wrap: anywhere;
+}
+body[data-career-layout="document"] .career-profile-info .profile-contact p > span {margin-right: 5px;}
 body[data-career-layout="document"] .app-nav {gap: 5px;}
 body[data-career-layout="document"] .app-nav .nav-link {
   padding: 8px 11px; min-height: 40px; justify-content: flex-start; color: var(--career-muted);
@@ -904,8 +936,7 @@ body[data-career-layout="document"] :is(.app-nav a,.career-entry-list a):focus-v
   body[data-career-layout="document"] .app-shell {grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr);}
   body[data-career-layout="document"] .app-sidebar {display: block; padding: 17px 21px; border: 0; border-bottom: 1px solid var(--career-line);}
   body[data-career-layout="document"] .app-brand strong {font-size: 23px;}
-  body[data-career-layout="document"] .career-profile-role {margin-top: 5px;}
-  body[data-career-layout="document"] .career-profile-period {display: none;}
+  body[data-career-layout="document"] .career-profile-info {margin: 7px 0 10px;}
   body[data-career-layout="document"] .app-sidebar .app-nav {display: flex; flex-wrap: wrap; margin-top: 8px; gap: 3px 5px;}
   body[data-career-layout="document"] nav.bottom-nav {display: none;}
 }
