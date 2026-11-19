@@ -72,6 +72,12 @@
   // Only opaque presentation fingerprints are kept in this public script.
   // Names, dates, case content and project evidence stay in encrypted HTML.
   // Vulnerability case notes have a dedicated top-level page.
+  const PROJECT_ROUTES = {
+    all: "#/projects",
+    practice: "#/projects/practice",
+    research: "#/projects/tools",
+    learning: "#/projects/learning"
+  };
   const PROJECT_SECTIONS = [
     {id:"practice",label:"실무·사례"},
     {id:"research",label:"개발·연구"},
@@ -314,8 +320,7 @@
       if (event && typeof event.stopPropagation === "function") event.stopPropagation();
       activeFilter = group.id;
       if (document.body.dataset.careerLayout === "document") {
-        const target = group.id === "practice" ? "#/projects/practice" :
-          group.id === "research" ? "#/projects/tools" : "#/projects";
+        const target = PROJECT_ROUTES[group.id] || PROJECT_ROUTES.all;
         if (location.hash !== target) history.replaceState(null, "", target);
         renderRoute(false);
       }
@@ -729,41 +734,51 @@
       }
     }
 
-    const practiceHash = "#/projects/practice";
-    const toolsHash = "#/projects/tools";
     const careerHash = "#/profile/details";
     const links = [
-      [practiceHash, "실무 프로젝트", "projects"],
-      [CASES_ROUTE, "진단 사례", "cases"],
-      [toolsHash, "도구 제작", "tools"],
-      [careerHash, "경력·기술", "career"]
+      [PROJECT_ROUTES.practice, "실무·사례"],
+      [CASES_ROUTE, "취약점 정리"],
+      [PROJECT_ROUTES.research, "개발·연구"]
     ];
-    function createLink(href, label, key) {
+    function createLink(href, label) {
       const link = document.createElement("a");
       link.href = href;
       link.textContent = label;
-      if (key) link.dataset.nav = key;
       return link;
     }
 
     const projectLink = nav.querySelector('[data-nav="projects"]');
     if (!projectLink) return;
     const projectCount = projectLink.querySelector(".nav-count");
-    projectLink.href = practiceHash;
-    projectLink.textContent = "실무 프로젝트";
+    projectLink.href = PROJECT_ROUTES.all;
+    projectLink.textContent = "프로젝트";
     if (projectCount) projectLink.append(projectCount);
     const profileLink = nav.querySelector('[data-nav="profile"] span');
     if (profileLink) profileLink.textContent = "소개";
     const caseLink = nav.querySelector('[data-nav="cases"]');
     if (caseLink) {
-      caseLink.textContent = "진단 사례";
+      caseLink.textContent = "취약점 정리";
       projectLink.after(caseLink);
     }
-    for (const [href, label, key] of links.slice(2)) {
-      const link = createLink(href, label, key);
+
+    const projectGroup = document.createElement("div");
+    projectGroup.className = "career-project-group";
+    const subnav = document.createElement("ul");
+    subnav.className = "career-project-links";
+    subnav.setAttribute("aria-label", "프로젝트 분류");
+    const sublinks = new Map();
+    for (const group of PROJECT_SECTIONS) {
+      const item = document.createElement("li");
+      const link = createLink(PROJECT_ROUTES[group.id], group.label);
       link.className = "nav-link";
-      nav.append(link);
+      sublinks.set(group.id, link);
+      item.append(link);
+      subnav.append(item);
     }
+    projectLink.before(projectGroup);
+    projectGroup.append(projectLink, subnav);
+    const filters = document.querySelector("#view-projects .segments");
+    if (filters) filters.hidden = true;
 
     function addEntries() {
       if (host.querySelector(".career-entry-list")) return;
@@ -793,9 +808,10 @@
       addEntries();
     };
 
+    const projectFilters = new Map(Object.entries(PROJECT_ROUTES).map(([filter, hash]) => [hash, filter]));
     const previousRoute = route;
     route = function () {
-      if (location.hash === practiceHash || location.hash === toolsHash) return {view: "projects"};
+      if (projectFilters.has(location.hash)) return {view: "projects"};
       return previousRoute();
     };
     route.__portfolioCasesRoute = true;
@@ -803,11 +819,11 @@
     let lastHash;
     renderRoute = function (focus) {
       const hash = location.hash;
-      const directFilter = hash === practiceHash ? "practice" : hash === toolsHash ? "research" : null;
-      const previousHash = lastHash;
+      const filter = projectFilters.get(hash);
+      const changed = hash !== lastHash;
       lastHash = hash;
-      if (hash !== previousHash && directFilter) {
-        activeFilter = directFilter;
+      if (changed && filter) {
+        activeFilter = filter;
         searchQuery = "";
         const search = document.getElementById("project-search");
         if (search) search.value = "";
@@ -816,28 +832,27 @@
       previousRender(focus);
 
       const detail = hash.match(/^#\/project\/(\d+)$/);
-      const toolDetail = detail && projectSection(sourceProjects()[Number(detail[1]) - 1]) === "research";
-      const section = hash === toolsHash || toolDetail ? "tools" : hash === careerHash ? "career" : null;
-      if (toolDetail) {
+      const category = detail && projectSection(sourceProjects()[Number(detail[1]) - 1]);
+      const currentCategory = filter || category;
+      for (const [key, link] of sublinks) {
+        if (key === currentCategory) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+      }
+      projectGroup.classList.toggle("career-project-active", sublinks.has(currentCategory));
+      if (sublinks.has(currentCategory)) projectLink.removeAttribute("aria-current");
+      if (detail && sublinks.has(category)) {
         const back = document.querySelector("#view-detail .back-link");
-        if (back) back.href = toolsHash;
+        if (back) back.href = PROJECT_ROUTES[category];
       }
-      if (section) {
-        nav.querySelectorAll("[data-nav]").forEach(link => {
-          if (link.dataset.nav === section) link.setAttribute("aria-current", "page");
-          else link.removeAttribute("aria-current");
-        });
-      }
-      const title = hash === toolsHash ? "도구 제작" : hash === practiceHash ? "실무 프로젝트" :
-        hash === careerHash ? "경력·기술" : hash === CASES_ROUTE ? "진단 사례" : null;
+      const title = filter ? "프로젝트" : hash === careerHash ? "경력·기술" :
+        hash === CASES_ROUTE ? "취약점 정리" : null;
       if (title) {
         const crumb = document.getElementById("current-screen");
         if (crumb) crumb.textContent = title;
-        if (directFilter || hash === "#/projects") document.getElementById("projects-title").textContent = title;
+        if (filter) document.getElementById("projects-title").textContent = title;
         document.title = title + " · " + profile.name;
       }
-      if (hash === "#/projects") document.getElementById("projects-title").textContent = "프로젝트";
-      if (directFilter && hash !== previousHash && focus) {
+      if (filter && changed && focus) {
         document.getElementById("workspace").scrollTop = 0;
         document.getElementById("projects-title")?.focus({preventScroll: true});
       }
@@ -1072,6 +1087,39 @@ body[data-career-layout="document"] :is(.app-sidebar,.workspace) :is(a,button,in
     grid-template-columns: minmax(0, 1fr);
     gap: var(--career-space-2);
   }
+}
+
+body[data-career-layout="document"] #view-projects .segments[hidden] {display: none !important;}
+body[data-career-layout="document"] .career-project-links {
+  list-style: none;
+  display: grid;
+  gap: var(--career-space-1);
+  padding: 0 0 0 var(--career-space-2);
+  margin: var(--career-space-1) 0 var(--career-space-2) var(--career-space-3);
+  border-inline-start: 1px solid var(--career-line);
+}
+body[data-career-layout="document"] .career-project-links .nav-link {font-size: .8125rem;}
+body[data-career-layout="document"] .career-project-active > .nav-link {
+  color: var(--career-accent);
+  font-weight: 700;
+}
+@media (max-width: 800px) {
+  body[data-career-layout="document"] .app-sidebar .app-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  body[data-career-layout="document"] .career-project-group {display: contents;}
+  body[data-career-layout="document"] .app-nav > :is([data-nav="profile"],[data-nav="cases"]),
+  body[data-career-layout="document"] .career-project-group > .nav-link {grid-row: 1;}
+  body[data-career-layout="document"] .career-project-links {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0;
+    border: 0;
+    padding-inline-start: var(--career-space-2);
+  }
+  body[data-career-layout="document"] .app-nav .nav-link {min-width: 0;}
 }
 `;
     document.head.append(layoutStyle);
