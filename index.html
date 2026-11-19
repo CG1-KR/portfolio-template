@@ -16,12 +16,12 @@
         <style>
             :root {
                 color-scheme: light;
-                --entry-bg: #f2f3ef;
+                --entry-bg: #edf2f8;
                 --entry-card: #fff;
-                --entry-text: #1d2623;
-                --entry-muted: #525e58;
-                --entry-line: #c6cec8;
-                --entry-accent: #234b3d;
+                --entry-text: #213047;
+                --entry-muted: #506176;
+                --entry-line: #dde5ee;
+                --entry-accent: #285882;
                 font-family: "Pretendard Variable", Pretendard, "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
             }
             *, *::before, *::after { box-sizing: border-box; }
@@ -38,9 +38,9 @@
                 width: min(100%, 420px);
                 padding: clamp(24px, 6vw, 40px);
                 background: var(--entry-card);
-                border: 1px solid #dbe0da;
+                border: 1px solid var(--entry-line);
                 border-radius: 14px;
-                box-shadow: 0 4px 18px #1d262309;
+                box-shadow: 0 4px 18px #21304709;
             }
             .staticrypt-title { margin: 0; font-size: 27px; letter-spacing: -.045em; line-height: 1.35; }
             .staticrypt-instructions p { margin: 10px 0 25px; color: var(--entry-muted); font-size: 14px; line-height: 1.65; }
@@ -77,16 +77,16 @@
                 min-height: 46px;
                 margin-top: 13px;
                 padding: 10px 16px;
-                border: 0;
+                border: 1px solid var(--entry-line);
                 border-radius: 7px;
-                background: var(--entry-accent);
-                color: #fff;
+                background: #f1f5fa;
+                color: var(--entry-accent);
                 font: inherit;
                 font-size: 14px;
                 font-weight: 600;
                 cursor: pointer;
             }
-            .staticrypt-decrypt-button:hover { background: #193a2e; }
+            .staticrypt-decrypt-button:hover { background: #e2ecf7; }
             #staticrypt-password:focus-visible, .staticrypt-decrypt-button:focus-visible {
                 outline: 2px solid var(--entry-accent);
                 outline-offset: 2px;
